@@ -1,0 +1,6 @@
+- nên tìm hiểu về chạy migration bằng liquibase hoặc Flyway (recommend flyway)
+chạy tạo bảng bằng câu lệnh sql có lợi và đc khuyến khích hơn rất nhiều so với tạo bảng bằng jpa (tự search)
+- cấu trúc thư mục đề xuất thay đổi như sau để đúng với clean architecture:
+https://github.com/AthirsonSilva/spring-boot-clean-architecture/tree/main/cleanarch-from-ntier
+
+tham khảo để chỉnh

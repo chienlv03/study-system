@@ -56,6 +56,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    // tại sao lại sử dụng CascadeType.ALL ? t thấy đa phần m đều dùng GET vậy m có quan tâm đến hiệu năng
+    // khi fetch toàn bộ dữ liệu nếu sử dụng ALL không
+    // m có quan tâm đến tính nhất quán của dữ liệu khi m delete nó sẽ delete cả các trường có liên quan không
+
+    // ví dụ nếu m xóa một user khỏi db thì liệu course có bị xóa cùng không
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Course> courses = new HashSet<>();
 

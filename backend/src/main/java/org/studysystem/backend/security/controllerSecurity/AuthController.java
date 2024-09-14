@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// tại sao controller này ko đặt lên tầng controller mà lại đătj ở đây
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/auth")
@@ -49,6 +50,7 @@ public class AuthController {
   private final UserMapper userMapper;
   private final RefreshTokenService refreshTokenService;
 
+  // là web server thì mỗi khi có lỗi thì log nó ra theo từng level nhé tìm hiểu org.slf4j.Logger
   @PostMapping("/sign-in")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
