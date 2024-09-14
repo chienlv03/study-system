@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.studysystem.backend.dto.response.MessageResponse;
 
-
+// code thừa ở đây để làm gì thế có RestControllerAdvice rồi mà
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

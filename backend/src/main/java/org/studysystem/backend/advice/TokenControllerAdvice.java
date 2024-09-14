@@ -9,6 +9,8 @@ import org.studysystem.backend.exception.TokenRefreshException;
 
 import java.util.Date;
 
+// nên gộp GlobalException vào đây để có thể trả về cả response body mà ko cần cái controller advice kia nữa
+// t thấy m có nhiều code thừa tại sao với mỗi response không trả về cả status code (như cái error message)
 @RestControllerAdvice
 public class TokenControllerAdvice {
 
