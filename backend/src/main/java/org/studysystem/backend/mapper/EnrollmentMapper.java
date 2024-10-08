@@ -8,16 +8,16 @@ import org.studysystem.backend.dto.response.LearnBecomesResponse;
 import org.studysystem.backend.dto.response.GradeResponse;
 import org.studysystem.backend.dto.response.UserAttendanceResponse;
 import org.studysystem.backend.entity.Attendance;
-import org.studysystem.backend.entity.CourseEnrollment;
+import org.studysystem.backend.entity.Enrollment;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public interface CourseEnrollmentMapper {
+public interface EnrollmentMapper {
     @Mapping(source = "course.classCode", target = "classCode")
     @Mapping(source = "course.name", target = "name")
-    LearnBecomesResponse toLearnBecomesResponse(CourseEnrollment courseEnrollment);
+    LearnBecomesResponse toLearnBecomesResponse(Enrollment enrollment);
 
     @Mapping(source = "user.id", target = "id")
     @Mapping(source = "user.code", target = "code")
@@ -26,7 +26,7 @@ public interface CourseEnrollmentMapper {
     @Mapping(source = "user.dob", target = "dob")
     @Mapping(source = "user.gender", target = "gender")
     @Mapping(target = "attendanceRecords", expression = "java(mapAttendances(enrollment.getAttendances()))")
-    UserAttendanceResponse toUserAttendanceResponse(CourseEnrollment enrollment);
+    UserAttendanceResponse toUserAttendanceResponse(Enrollment enrollment);
 
     default List<AttendanceRequest> mapAttendances(List<Attendance> attendances) {
         return attendances.stream()
@@ -34,12 +34,12 @@ public interface CourseEnrollmentMapper {
                 .collect(Collectors.toList());
     }
 
-    @Mapping(source = "courseEnrollment.id", target = "enrollmentId")
+    @Mapping(source = "enrollment.id", target = "enrollmentId")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.code", target = "code")
     @Mapping(source = "user.username", target = "username")
-    GradeResponse toGradeResponse(CourseEnrollment courseEnrollment);
+    GradeResponse toGradeResponse(Enrollment enrollment);
 
     @Mapping(source = "user.id", target = "userId")
-    AbsentResponse toAbsentResponse(CourseEnrollment courseEnrollment);
+    AbsentResponse toAbsentResponse(Enrollment enrollment);
 }

@@ -1,15 +1,11 @@
 package org.studysystem.backend.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.studysystem.backend.dto.request.CourseRequest;
 import org.studysystem.backend.dto.response.CourseInfoResponse;
 import org.studysystem.backend.dto.response.MessageResponse;
-import org.studysystem.backend.entity.Course;
-import org.studysystem.backend.repository.CourseRepository;
 import org.studysystem.backend.service.CourseService;
 
 import java.util.List;

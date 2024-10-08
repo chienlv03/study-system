@@ -5,7 +5,7 @@ import org.studysystem.backend.dto.response.*;
 
 import java.util.List;
 
-public interface CourseEnrollmentService {
+public interface EnrollmentService {
 
     void enrollUserInCourse(Long userId, Long courseId, String classCode);
 

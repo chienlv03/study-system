@@ -5,13 +5,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.studysystem.backend.entity.enums.AttendanceStatus;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -21,9 +20,9 @@ public class Attendance {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "course_enrollment_id", nullable = false)
+    @JoinColumn(name = "enrollment_id", nullable = false)
     @JsonBackReference
-    private CourseEnrollment courseEnrollment;
+    private Enrollment enrollment;
 
     @Enumerated(EnumType.STRING)
     @JsonFormat(shape = JsonFormat.Shape.STRING)

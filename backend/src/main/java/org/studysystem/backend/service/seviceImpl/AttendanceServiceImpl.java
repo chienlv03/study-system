@@ -5,14 +5,16 @@ import org.springframework.stereotype.Service;
 import org.studysystem.backend.dto.request.CreateAttendanceRequest;
 import org.studysystem.backend.dto.request.UpdateAttendanceRequest;
 import org.studysystem.backend.dto.response.AttendanceResponse;
-import org.studysystem.backend.dto.response.UserAttendanceResponse;
 import org.studysystem.backend.entity.Attendance;
-import org.studysystem.backend.entity.CourseEnrollment;
+import org.studysystem.backend.entity.Enrollment;
 import org.studysystem.backend.entity.enums.AttendanceStatus;
+import org.studysystem.backend.exception.ResourceNotFoundException;
 import org.studysystem.backend.mapper.AttendanceMapper;
 import org.studysystem.backend.repository.AttendanceRepository;
-import org.studysystem.backend.repository.CourseEnrollmentRepository;
+import org.studysystem.backend.repository.EnrollmentRepository;
 import org.studysystem.backend.service.AttendanceService;
+import org.studysystem.backend.utils.FindEntity;
+import org.studysystem.backend.utils.MessageConstants;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,20 +24,21 @@ import java.util.stream.Collectors;
 public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
-    private final CourseEnrollmentRepository courseEnrollmentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final AttendanceMapper attendanceMapper;
+    private final FindEntity findEntity;
 
     @Override
     public List<AttendanceResponse> createAttendanceRecords(Long courseId, CreateAttendanceRequest request) {
-        List<CourseEnrollment> courseEnrollments = courseEnrollmentRepository.findByCourseId(courseId);
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
 
-        if (courseEnrollments.isEmpty()) {
-            throw new RuntimeException("Lớp không có sinh viên");
+        if (enrollments.isEmpty()) {
+            throw new ResourceNotFoundException(MessageConstants.COURSE_EMPTY);
         }
 
-        List<Attendance> attendances = courseEnrollments.stream().map(courseEnrollment -> {
+        List<Attendance> attendances = enrollments.stream().map(courseEnrollment -> {
             Attendance attendance = new Attendance();
-            attendance.setCourseEnrollment(courseEnrollment);
+            attendance.setEnrollment(courseEnrollment);
             attendance.setAttendanceTime(request.getAttendanceTime());
             attendance.setStatus(AttendanceStatus.PRESENT); // Default status
             return attendance;
@@ -50,14 +53,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public AttendanceResponse updateAttendanceStatus(Long userId, Long courseId, UpdateAttendanceRequest request) {
-        CourseEnrollment courseEnrollment = courseEnrollmentRepository.findByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(() -> new RuntimeException("CourseEnrollment not found for userId: " + userId +
-                        " and courseId: " + courseId));
+        Enrollment enrollment = findEntity.findByUserIdAndCourseId(userId, courseId);
 
-        Attendance attendance = attendanceRepository.findByCourseEnrollmentAndAttendanceTime(
-                        courseEnrollment, request.getAttendanceTime())
-                .orElseThrow(() -> new RuntimeException("Attendance not found for studentId: " + userId +
-                        " and classroomId: " + courseId + " at " + request.getAttendanceTime()));
+        Attendance attendance = findEntity.findByCourseEnrollmentAndAttendanceTime(enrollment, request.getAttendanceTime());
 
         AttendanceStatus oldStatus = attendance.getStatus();
         AttendanceStatus newStatus = calculateStatus(request.getIsAbsent(), request.getIsExcused());
@@ -80,8 +78,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     private void updateAbsentCounts(Long userId, Long courseId, AttendanceStatus oldStatus, AttendanceStatus newStatus) {
-        CourseEnrollment studentClassroom = courseEnrollmentRepository.findByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(() -> new RuntimeException("StudentClassroom not found for studentId: " + userId + " and classroomId: " + courseId));
+        Enrollment studentClassroom = findEntity.findByUserIdAndCourseId(userId, courseId);
 
         if (oldStatus == AttendanceStatus.ABSENT_UNEXCUSED) {
             studentClassroom.setUnexcusedAbsenceCount(studentClassroom.getUnexcusedAbsenceCount() - 1);
@@ -101,7 +98,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             }
         }
 
-        courseEnrollmentRepository.save(studentClassroom);
+        enrollmentRepository.save(studentClassroom);
     }
 
     @Override

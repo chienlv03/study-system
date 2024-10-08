@@ -1,4 +1,4 @@
-package org.studysystem.backend.advice;
+package org.studysystem.backend.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

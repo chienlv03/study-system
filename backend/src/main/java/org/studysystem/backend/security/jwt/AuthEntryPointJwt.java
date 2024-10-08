@@ -39,7 +39,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     final Map<String, Object> body = new HashMap<>(); // Tạo một map body để chứa các thông tin chi tiết về lỗi
     body.put("status", HttpServletResponse.SC_UNAUTHORIZED); // Mã trạng thái HTTP (401)
     body.put("error", "Unauthorized"); // Chuỗi thông báo lỗi ("Unauthorized").
-    body.put("message", "Bạn chưa đăng nhập"); // Thông điệp lỗi từ ngoại lệ authException
+    body.put("message", authException.getMessage()); // Thông điệp lỗi từ ngoại lệ authException
     body.put("path", request.getServletPath()); // Đường dẫn của yêu cầu HTTP gây ra lỗi.
 
     final ObjectMapper mapper = new ObjectMapper(); // Tạo một ObjectMapper từ thư viện Jackson để chuyển đổi body thành JSON.

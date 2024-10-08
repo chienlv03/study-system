@@ -1,17 +1,17 @@
 package org.studysystem.backend.service.seviceImpl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 import org.studysystem.backend.entity.Course;
-import org.studysystem.backend.entity.CourseEnrollment;
+import org.studysystem.backend.entity.Enrollment;
 import org.studysystem.backend.entity.User;
-import org.studysystem.backend.mapper.CourseEnrollmentMapper;
-import org.studysystem.backend.repository.CourseEnrollmentRepository;
-import org.studysystem.backend.repository.CourseRepository;
-import org.studysystem.backend.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.studysystem.backend.service.CourseEnrollmentService;
+import org.studysystem.backend.mapper.EnrollmentMapper;
+import org.studysystem.backend.repository.EnrollmentRepository;
+import org.studysystem.backend.service.EnrollmentService;
+import org.studysystem.backend.utils.FindEntity;
+import org.studysystem.backend.utils.Validation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,42 +20,36 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CourseEnrollmentServiceImpl implements CourseEnrollmentService {
+public class EnrollmentServiceImpl implements EnrollmentService {
 
-    private final CourseEnrollmentRepository courseEnrollmentRepository;
-    private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
-    private final CourseEnrollmentMapper courseEnrollmentMapper;
+    private final EnrollmentRepository enrollmentRepository;
+    private final EnrollmentMapper enrollmentMapper;
+    private final FindEntity findEntity;
+    private final Validation validation;
 
     @Override
     public void enrollUserInCourse(Long userId, Long courseId, String classCode) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = findEntity.findUser(userId);
         Course course;
 
         if (classCode != null) {
-            course = courseRepository.findByClassCode(classCode)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy mã lớp học"));
+            course = findEntity.findCourseByClassCode(classCode);
         } else {
-            course = courseRepository.findById(courseId)
-                    .orElseThrow(() -> new RuntimeException("Course not found"));
+            course = findEntity.findCourse(courseId);
         }
 
-        if (courseEnrollmentRepository.existsByUserIdAndCourseId(userId, course.getId())) {
-            throw new RuntimeException("Học sinh đã tham gia khóa học này");
-        }
+        validation.existUserInCourse(userId, courseId);
 
-        CourseEnrollment enrollment = new CourseEnrollment();
+        Enrollment enrollment = new Enrollment();
         enrollment.setUser(user);
         enrollment.setCourse(course);
 
-        courseEnrollmentRepository.save(enrollment);
+        enrollmentRepository.save(enrollment);
     }
 
     @Override
     public LearnBecomesResponse updateScores(Long enrollmentId, UpdateScoresRequest request) {
-        CourseEnrollment enrollment = courseEnrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+        Enrollment enrollment = findEntity.findCourseEnrollment(enrollmentId);
 
         enrollment.setProgressScore(request.getProgressScore());
         enrollment.setFinalScore(request.getFinalScore());
@@ -65,28 +59,27 @@ public class CourseEnrollmentServiceImpl implements CourseEnrollmentService {
                 request.getFinalScore() * 0.7;
         BigDecimal formattedCourseScore = BigDecimal.valueOf(courseScore).setScale(2, RoundingMode.HALF_UP);
         enrollment.setCourseScore(formattedCourseScore.doubleValue());
-        courseEnrollmentRepository.save(enrollment);
-        return courseEnrollmentMapper.toLearnBecomesResponse(enrollment);
+        enrollmentRepository.save(enrollment);
+        return enrollmentMapper.toLearnBecomesResponse(enrollment);
     }
 
     @Override
     public LearnBecomesResponse getCourseEnrollment(Long userId, Long courseId) {
-        CourseEnrollment enrollment = courseEnrollmentRepository.findByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
-        return courseEnrollmentMapper.toLearnBecomesResponse(enrollment);
+        Enrollment enrollment = findEntity.findByUserIdAndCourseId(userId, courseId);
+        return enrollmentMapper.toLearnBecomesResponse(enrollment);
     }
 
     @Override
     public List<LearnBecomesResponse> getAllCourseEnrollmentsByUserId(Long userId) {
-        List<CourseEnrollment> enrollments = courseEnrollmentRepository.findByUserId(userId);
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         return enrollments.stream()
-                .map(courseEnrollmentMapper::toLearnBecomesResponse)
+                .map(enrollmentMapper::toLearnBecomesResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<UserResponse> getAllUsersInCourse(Long courseId) {
-        List<CourseEnrollment> enrollments = courseEnrollmentRepository.findByCourseId(courseId);
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
         return enrollments.stream()
                 .map(enrollment -> {
                     User user = enrollment.getUser();
@@ -104,7 +97,7 @@ public class CourseEnrollmentServiceImpl implements CourseEnrollmentService {
 
     @Override
     public List<CourseInfoResponse> getAllCoursesOfUser(Long userId) {
-        List<CourseEnrollment> enrollments = courseEnrollmentRepository.findByUserId(userId);
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         return enrollments.stream()
                 .map(enrollment -> {
                     Course course = enrollment.getCourse();
@@ -121,32 +114,31 @@ public class CourseEnrollmentServiceImpl implements CourseEnrollmentService {
 
     @Override
     public List<AbsentResponse> getAbsencesForUserInCourse(Long courseId) {
-        List<CourseEnrollment> enrollments = courseEnrollmentRepository.findByCourseId(courseId);
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
         return enrollments.stream()
-                .map(courseEnrollmentMapper::toAbsentResponse)
+                .map(enrollmentMapper::toAbsentResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void removeUserFromCourse(Long userId, Long courseId) {
-        CourseEnrollment enrollment = courseEnrollmentRepository.findByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
-        courseEnrollmentRepository.delete(enrollment);
+        Enrollment enrollment = findEntity.findByUserIdAndCourseId(userId, courseId);
+        enrollmentRepository.delete(enrollment);
     }
 
     @Override
     public List<UserAttendanceResponse> getAllUsersAndAttendanceInCourse(Long courseId) {
-        List<CourseEnrollment> enrollments = courseEnrollmentRepository.findByCourseId(courseId);
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
         return enrollments.stream()
-                .map(courseEnrollmentMapper::toUserAttendanceResponse)
+                .map(enrollmentMapper::toUserAttendanceResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<GradeResponse> getGradesForCourse(Long courseId) {
-        List<CourseEnrollment> enrollments = courseEnrollmentRepository.findByCourseId(courseId);
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
         return enrollments.stream()
-                .map(courseEnrollmentMapper::toGradeResponse)
+                .map(enrollmentMapper::toGradeResponse)
                 .collect(Collectors.toList());
     }
 

@@ -10,10 +10,11 @@ import org.studysystem.backend.dto.request.UserInfoSearchRequest;
 import org.studysystem.backend.dto.request.UserUpdateRequest;
 import org.studysystem.backend.dto.response.UserInfoResponse;
 import org.studysystem.backend.entity.User;
+import org.studysystem.backend.exception.ResourceNotFoundException;
 import org.studysystem.backend.mapper.UserMapper;
-import org.studysystem.backend.repository.CourseRepository;
 import org.studysystem.backend.repository.UserRepository;
 import org.studysystem.backend.service.UserService;
+import org.studysystem.backend.utils.MessageConstants;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
             return userMapper.toUserInfoResponse(userRepository.save(user));
         } else {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
     }
 
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
             User user = optionalUser.get();
             return userMapper.toUserInfoResponse(user);
         } else {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
     }
 
@@ -80,10 +81,10 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
                 userRepository.save(user);
             } else {
-                throw new RuntimeException("Old password is incorrect");
+                throw new RuntimeException(MessageConstants.OLD_PASSWORD_INCORRECT);
             }
         } else {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
     }
 }

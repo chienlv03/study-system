@@ -1,6 +1,5 @@
 package org.studysystem.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,10 +9,11 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "code"),
@@ -54,13 +54,7 @@ public class User {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Course> courses = new HashSet<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CourseEnrollment> courseEnrollments = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();;
 
     public User(String code, String username, String email, String dob, String gender, String encode) {
         this.code = code;

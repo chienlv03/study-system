@@ -7,9 +7,9 @@ import org.studysystem.backend.entity.Attendance;
 
 @Mapper(componentModel = "spring")
 public interface AttendanceMapper {
-    @Mapping(source = "courseEnrollment.user.id", target = "userId")
-    @Mapping(source = "courseEnrollment.course.id", target = "courseId")
-    @Mapping(source = "courseEnrollment.unexcusedAbsenceCount", target = "unexcusedAbsenceCount")
-    @Mapping(source = "courseEnrollment.excusedAbsenceCount", target = "excusedAbsenceCount")
+    @Mapping(source = "enrollment.user.id", target = "userId")
+    @Mapping(source = "enrollment.course.id", target = "courseId")
+    @Mapping(source = "enrollment.unexcusedAbsenceCount", target = "unexcusedAbsenceCount")
+    @Mapping(source = "enrollment.excusedAbsenceCount", target = "excusedAbsenceCount")
     AttendanceResponse toAttendanceResponse(Attendance attendance);
 }
