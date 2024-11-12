@@ -7,16 +7,12 @@ import lombok.*;
 
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class SignupRequest {
-
-    @NotBlank
-    @Size(min = 3, max = 20)
-    private String code;
-
     @NotBlank
     @Size(min = 3, max = 20)
     private String username;

@@ -1,12 +1,10 @@
 package org.studysystem.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,24 +16,28 @@ public class Submission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Assignments assignment;
+    private String content;
+
+    private String submittedDate;
+
+    private Double grade;
+    private String feedback;
+    private boolean isLate;
 
     @ManyToOne
+    @JoinColumn(name = "assignment_id", nullable = false)
+    private Assignment assignment;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String content;  // Nội dung bài nộp (text)
+    @ManyToOne
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 
-    private String fileUrl;  // URL của file nộp kèm
-    private String imageUrl;  // URL của ảnh nộp kèm
-
-    private LocalDateTime submissionDate;  // Thời gian nộp bài
-
-    private boolean graded;  // Đã chấm điểm hay chưa
-    private Integer grade;  // Điểm của bài nộp
-    private String feedback;  // Nhận xét của giáo viên
-
-    // Getters, setters
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SubmissionFile> files = new HashSet<>();
 }
 
 

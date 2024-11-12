@@ -31,18 +31,27 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
           throws IOException, ServletException {
-    logger.error("Unauthorized error: {}", authException.getMessage()); // Ghi lại thông tin lỗi vào log với mức độ error. Thông điệp log bao gồm thông điệp từ ngoại lệ authException.
 
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE); // Đặt kiểu nội dung của phản hồi là JSON.
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Đặt mã trạng thái HTTP của phản hồi là 401 (Unauthorized).
+    logger.error("Unauthorized error: {}", authException.getMessage()); // Log thông tin lỗi
 
-    final Map<String, Object> body = new HashMap<>(); // Tạo một map body để chứa các thông tin chi tiết về lỗi
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE); // Đặt kiểu nội dung là JSON
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Đặt mã trạng thái HTTP là 401 (Unauthorized)
+
+    // Tạo một map body chứa thông tin chi tiết về lỗi
+    final Map<String, Object> body = new HashMap<>();
+    body.put("timestamp", System.currentTimeMillis()); // Thời gian xảy ra lỗi (epoch time)
     body.put("status", HttpServletResponse.SC_UNAUTHORIZED); // Mã trạng thái HTTP (401)
-    body.put("error", "Unauthorized"); // Chuỗi thông báo lỗi ("Unauthorized").
-    body.put("message", authException.getMessage()); // Thông điệp lỗi từ ngoại lệ authException
-    body.put("path", request.getServletPath()); // Đường dẫn của yêu cầu HTTP gây ra lỗi.
+    body.put("error", "Unauthorized"); // Chuỗi thông báo lỗi ("Unauthorized")
+    body.put("message", authException.getMessage()); // Thông điệp từ ngoại lệ authException
+    body.put("cause", authException.getCause() != null ? authException.getCause().toString() : "N/A"); // Chi tiết nguyên nhân nếu có
+    body.put("path", request.getRequestURI()); // Đường dẫn yêu cầu HTTP gây ra lỗi
+    body.put("method", request.getMethod()); // Phương thức HTTP (GET, POST, etc.)
+    body.put("query", request.getQueryString() != null ? request.getQueryString() : "N/A"); // Chuỗi query nếu có
+    body.put("remoteAddress", request.getRemoteAddr()); // Địa chỉ IP của client
 
-    final ObjectMapper mapper = new ObjectMapper(); // Tạo một ObjectMapper từ thư viện Jackson để chuyển đổi body thành JSON.
-    mapper.writeValue(response.getOutputStream(), body); // Ghi đối tượng body dưới dạng JSON vào output stream của phản hồi HTTP.
+    // Chuyển đổi map thành JSON và ghi vào response
+    final ObjectMapper mapper = new ObjectMapper();
+    mapper.writeValue(response.getOutputStream(), body); // Ghi đối tượng JSON vào output stream của response
   }
+
 }

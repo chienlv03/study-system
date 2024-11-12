@@ -8,7 +8,6 @@ import lombok.Data;
 public class GradeResponse {
     private Long enrollmentId;
     private Long userId;
-    private String code;
     private String username;
     private Double progressScore;
     private Double finalScore;

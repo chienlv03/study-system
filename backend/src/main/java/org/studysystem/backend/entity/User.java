@@ -16,18 +16,12 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "code"),
                 @UniqueConstraint(columnNames = "email")
         })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank
-    @Size(max = 10)
-    @Column(unique = true)
-    private String code;
 
     @NotBlank
     @Size(max = 20)
@@ -56,8 +50,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();;
 
-    public User(String code, String username, String email, String dob, String gender, String encode) {
-        this.code = code;
+    public User(String username, String email, String dob, String gender, String encode) {
         this.username = username;
         this.email = email;
         this.dob = dob;

@@ -1,7 +1,10 @@
 package org.studysystem.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.studysystem.backend.entity.Assignments;
+import org.studysystem.backend.entity.Assignment;
 
-public interface AssignmentRepository extends JpaRepository<Assignments, Long> {
+import java.util.List;
+
+public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
+    List<Assignment> findByCourseId(Long courseId);
 }

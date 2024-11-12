@@ -6,6 +6,8 @@ import org.studysystem.backend.entity.*;
 import org.studysystem.backend.exception.ResourceNotFoundException;
 import org.studysystem.backend.repository.*;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class FindEntity {
@@ -15,6 +17,7 @@ public class FindEntity {
     private final EnrollmentRepository enrollmentRepository;
     private final AttendanceRepository attendanceRepository;
     private final AssignmentRepository assignmentRepository;
+    private final SubmissionRepository submissionRepository;
 
     public User findUser(Long id) {
         return userRepository.findById(id)
@@ -26,10 +29,16 @@ public class FindEntity {
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.COURSE_NOT_FOUND));
     }
 
-    public Assignments findAssignment(Long id) {
+    public Assignment findAssignment(Long id) {
         return assignmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.ASSIGNMENT_NOT_FOUND));
     }
+
+    public Submission findSubmission(Long id) {
+        return submissionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.SUBMISSION_NOT_FOUND));
+    }
+
 
     public Course findCourseByClassCode(String classCode) {
         return courseRepository.findByClassCode(classCode)

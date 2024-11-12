@@ -10,5 +10,8 @@ public class CourseInfoResponse {
     private String name;
     private String classCode;
     private String startTime;
+    private String endTime;
+    private int maxStudents;
+    private int currentStudents;
     private Long userId;
 }

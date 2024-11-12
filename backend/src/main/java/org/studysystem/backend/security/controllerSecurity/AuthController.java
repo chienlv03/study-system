@@ -86,7 +86,6 @@ public class AuthController {
             .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
             .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
             .body(new UserInfoResponse(userDetails.getId(),
-                    userDetails.getCode(),
                     userDetails.getUsername(),
                     userDetails.getEmail(),
                     userDetails.getDob(),

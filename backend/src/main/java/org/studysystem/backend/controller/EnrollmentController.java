@@ -31,16 +31,16 @@ public class EnrollmentController {
     }
 
     // lấy thông tin của 1 courseEnrollment
-    @GetMapping("/get/courseEnrollment/course/{courseId}/user/{userId}")
+    @GetMapping("/get/enrollment/course/{courseId}/user/{userId}")
     public ResponseEntity<LearnBecomesResponse> getCourseEnrollment(@PathVariable Long courseId, @PathVariable Long userId) {
         LearnBecomesResponse response = enrollmentService.getCourseEnrollment(userId, courseId);
         return ResponseEntity.ok(response);
     }
 
     // lấy thông tin của tất cả khóa học mà 1 user đã tham gia
-    @GetMapping("/get/courseEnrollments/user/{userId}")
+    @GetMapping("/get/enrollments/user/{userId}")
     public ResponseEntity<List<LearnBecomesResponse>> getAllCourseEnrollmentsByUserId(@PathVariable Long userId) {
-        List<LearnBecomesResponse> responses = enrollmentService.getAllCourseEnrollmentsByUserId(userId);
+        List<LearnBecomesResponse> responses = enrollmentService.getAllEnrollmentsByUserId(userId);
         return ResponseEntity.ok(responses);
     }
 

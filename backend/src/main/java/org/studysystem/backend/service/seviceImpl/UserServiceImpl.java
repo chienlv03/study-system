@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.searchUsers(keyword);
         return users.stream().map(user -> new UserInfoSearchRequest(
                 user.getId(),
-                user.getCode(),
                 user.getUsername(),
                 user.getEmail()
         )).collect(Collectors.toList());

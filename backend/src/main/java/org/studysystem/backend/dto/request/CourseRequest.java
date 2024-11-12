@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class CourseRequest {
     private String name;
-    private String classCode;
     private String startTime;
+    private String endTime;
+    private int maxStudents;
 }

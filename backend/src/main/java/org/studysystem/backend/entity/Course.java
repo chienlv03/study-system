@@ -27,8 +27,15 @@ public class Course {
     @Column(unique = true)
     private String classCode;
 
+    private int maxStudents;
+
+    private int currentStudents;
+
     @NotBlank
     private String startTime;
+
+    @NotBlank
+    private String endTime;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Enrollment> enrollments = new HashSet<>();
@@ -36,4 +43,7 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Assignment> assignments = new HashSet<>();
 }

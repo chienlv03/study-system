@@ -13,7 +13,7 @@ public interface EnrollmentService {
 
     LearnBecomesResponse getCourseEnrollment(Long courseId, Long userId);
 
-    List<LearnBecomesResponse> getAllCourseEnrollmentsByUserId(Long userId);
+    List<LearnBecomesResponse> getAllEnrollmentsByUserId(Long userId);
 
     List<UserResponse> getAllUsersInCourse(Long courseId);
 

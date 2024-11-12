@@ -16,6 +16,7 @@ import org.studysystem.backend.utils.FindEntity;
 import org.studysystem.backend.utils.Validation;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +34,37 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseInfoResponse createCourse(CourseRequest courseRequest, Long userId) {
 
-        validation.existCourseCode(courseRequest.getClassCode());
         User user = findEntity.findUser(userId);
 
+        String generatedCode;
+        do {
+            generatedCode = generateCode();
+        } while (courseRepository.existsByClassCode(generatedCode));
+
+        validation.validateCourseTime(courseRequest.getStartTime(), courseRequest.getEndTime());
+
         Course course = courseMapper.toCourse(courseRequest);
+        course.setClassCode(generatedCode);
         course.setUser(user);
 
         return courseMapper.toCourseInfoResponse(courseRepository.save(course));
+    }
+
+    private String generateCode() {
+
+        // Tạo 6 chữ số ngẫu nhiên
+        Random random = new Random();
+        int randomDigits = random.nextInt(10000);
+
+        // Kết hợp hai phần
+        return String.format("%06d", randomDigits);
+    }
+
+    public void updateCurrentStudent(Long courseId) {
+        Course course = findEntity.findCourse(courseId);
+        int currentStudent = enrollmentRepository.countByCourseId(courseId);
+        course.setCurrentStudents(currentStudent);
+        courseRepository.save(course);
     }
 
     @Override
@@ -59,7 +84,6 @@ public class CourseServiceImpl implements CourseService {
         Course course = findEntity.findCourse(id);
 
         course.setName(courseRequest.getName());
-        course.setClassCode(courseRequest.getClassCode());
         course.setStartTime(courseRequest.getStartTime());
         return courseMapper.toCourseInfoResponse(courseRepository.save(course));
     }

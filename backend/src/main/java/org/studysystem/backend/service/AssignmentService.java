@@ -1,12 +1,21 @@
 package org.studysystem.backend.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.studysystem.backend.dto.request.AssignmentRequest;
+import org.studysystem.backend.dto.response.AssignmentResponse;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.List;
 
 public interface AssignmentService {
-    void createAssignment(String title, String description, String content,
-                          MultipartFile file, MultipartFile image,
-                          Long courseId, Long userId, LocalDateTime dueDate) throws IOException;
+    @Transactional
+    void createAssignment(AssignmentRequest assignmentRequest, MultipartFile[] files);
+
+    @Transactional
+    void updateAssignment(Long assignmentId, AssignmentRequest updatedAssignmentRequest, MultipartFile[] files);
+
+    List<AssignmentResponse> getAssignmentsByCourseId(Long courseId);
+
+    @Transactional
+    void deleteAssignment(Long assignmentId);
 }

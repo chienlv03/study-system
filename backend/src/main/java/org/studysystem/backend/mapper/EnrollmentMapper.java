@@ -20,7 +20,6 @@ public interface EnrollmentMapper {
     LearnBecomesResponse toLearnBecomesResponse(Enrollment enrollment);
 
     @Mapping(source = "user.id", target = "id")
-    @Mapping(source = "user.code", target = "code")
     @Mapping(source = "user.username", target = "username")
     @Mapping(source = "user.email", target = "email")
     @Mapping(source = "user.dob", target = "dob")
@@ -36,7 +35,6 @@ public interface EnrollmentMapper {
 
     @Mapping(source = "enrollment.id", target = "enrollmentId")
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.code", target = "code")
     @Mapping(source = "user.username", target = "username")
     GradeResponse toGradeResponse(Enrollment enrollment);
 

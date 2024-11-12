@@ -2,6 +2,7 @@ package org.studysystem.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -11,12 +12,8 @@ import java.util.Date;
 
 
 @ControllerAdvice
+@Component
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(value = RuntimeException.class)
-    ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-    }
 
     @ExceptionHandler(value = TokenRefreshException.class)
     public ErrorMessage handleTokenRefreshException(TokenRefreshException ex, WebRequest request) {
@@ -27,22 +24,31 @@ public class GlobalExceptionHandler {
                 request.getDescription(false));
     }
 
-    @ExceptionHandler(value = ResourceNotFoundException.class)
-    public ErrorMessage handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        return new ErrorMessage(
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
                 new Date(),
                 ex.getMessage(),
-                request.getDescription(false));
+                request.getDescription(false)));
     }
 
-    @ExceptionHandler(value = BadRequestException.class)
-    public ErrorMessage handleBadRequestException(BadRequestException ex, WebRequest request) {
-        return new ErrorMessage(
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorMessage> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(
+                HttpStatus.NOT_FOUND.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 new Date(),
                 ex.getMessage(),
-                request.getDescription(false));
+                request.getDescription(false)));
     }
 }
 

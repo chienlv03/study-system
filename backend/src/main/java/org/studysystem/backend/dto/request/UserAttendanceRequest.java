@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 public class UserAttendanceRequest {
     private Long id;
-    private String code;
     private String username;
     private String email;
     private String dob;

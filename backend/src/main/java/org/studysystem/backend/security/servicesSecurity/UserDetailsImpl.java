@@ -2,7 +2,6 @@
 
   import com.fasterxml.jackson.annotation.JsonIgnore;
   import lombok.AllArgsConstructor;
-  import lombok.Builder;
   import lombok.Data;
   import lombok.NoArgsConstructor;
   import org.springframework.security.core.GrantedAuthority;
@@ -25,8 +24,6 @@
 
     private Long id;
 
-    private String code;
-
     private String username;
 
     private String email;
@@ -42,12 +39,11 @@
 
     public static UserDetailsImpl build(User user) {
       List<GrantedAuthority> authorities = user.getRoles().stream()
-          .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-          .collect(Collectors.toList());
+              .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+              .collect(Collectors.toList());
 
       return new UserDetailsImpl(
               user.getId(),
-              user.getCode(),
               user.getUsername(),
               user.getEmail(),
               user.getDob(),
