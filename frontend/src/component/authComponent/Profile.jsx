@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = () => {
     const [formData, setFormData] = useState({
-        code: '',
         username: '',
         email: '',
         dob: '',
@@ -16,8 +15,8 @@ const Profile = () => {
         const fetchUserData = async () => {
             try {
                 const response = await getMyInfo();
-                const { code, username, email, dob, gender } = response.data;
-                setFormData({ code, username, email, dob, gender });
+                const { username, email, dob, gender } = response.data;
+                setFormData({ username, email, dob, gender });
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -118,16 +117,7 @@ const Profile = () => {
                                     </div>
                                     <h2 className="text-center mt-1 font-semibold dark:text-gray-300">Upload Profile and Cover Image</h2>
                                     <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
-                                        <div className="w-full mb-4 mt-6">
-                                            <label htmlFor="code" className="mb-2 dark:text-gray-300">Mã số</label>
-                                            <input
-                                                type="text"
-                                                name="code"
-                                                value={formData.code}
-                                                onChange={handleChange}
-                                                className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
-                                            />
-                                        </div>
+                                        
                                         <div className="w-full mb-4 mt-6">
                                             <label htmlFor="username" className="mb-2 dark:text-gray-300">Họ tên</label>
                                             <input

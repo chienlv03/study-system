@@ -7,8 +7,9 @@ const AddClassForm = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    classCode: '',
-    startTime: ''
+    startTime: '',
+    endTime: '',
+    maxStudents: '',
   });
 
   // console.log("AddClassForm: ");
@@ -21,8 +22,9 @@ const AddClassForm = () => {
       const { class: selectedClass } = location.state;
       setFormData({
         name: selectedClass.name,
-        classCode: selectedClass.classCode,
-        startTime: selectedClass.startTime
+        startTime: selectedClass.startTime,
+        endTime: selectedClass.endTime,
+        maxStudents: selectedClass.maxStudents,
       });
     }
   }, [location.state]);
@@ -62,24 +64,6 @@ const AddClassForm = () => {
         <div className="relative z-0 w-full mb-5 group">
           <input
             type="text"
-            name="classCode"
-            id="classCode"
-            value={formData.classCode}
-            onChange={handleInputChange}
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="classCode"
-            className="peer-focus:font-medium absolute text-sm text-gray-900 dark:text-gray-800 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-gray-900 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Mã lớp học
-          </label>
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
             name="name"
             id="name"
             value={formData.name}
@@ -111,29 +95,46 @@ const AddClassForm = () => {
               htmlFor="startTime"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-900 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-gray-900 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
-              Thời gian bắt đầu học
+              Thời gian bắt đầu
             </label>
           </div>
-          {/* <div className="relative z-0 w-full mb-5 group">
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="time"
+            name="endTime"
+            id="endTime"
+            value={formData.endTime}
+            onChange={handleInputChange}
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="endTime"
+            className="peer-focus:font-medium absolute text-sm text-gray-900 dark:text-gray-800 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-gray-900 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Thời gian kết thúc
+          </label>
+        </div>
+          <div className="relative z-0 w-full mb-5 group">
             <input
               type="number"
-              name="capacity"
-              id="capacity"
+              name="maxStudents"
+              id="maxStudents"
               min="0"
-              max="100"
-              value={formData.capacity}
+              value={formData.maxStudents}
               onChange={handleInputChange}
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="capacity"
+              htmlFor="maxStudents"
               className="peer-focus:font-medium absolute text-sm text-gray-900 dark:text-gray-900 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Số lượng sinh viên
             </label>
-          </div> */}
+          </div>
         </div>
         <div className="flex justify-end">
           <button

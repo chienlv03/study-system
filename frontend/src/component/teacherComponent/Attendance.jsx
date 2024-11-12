@@ -180,14 +180,13 @@ const Attendance = () => {
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">STT</th>
-              <th scope="col" className="px-6 py-3">Mã sinh viên</th>
               <th scope="col" className="px-6 py-3">Họ Và Tên</th>
               <th scope="col" className="px-6 py-3">Ngày sinh</th>
               <th scope="col" className="px-6 py-3">Email</th>
+              <th scope="col" className="px-6 py-3 text-center">Số lần vắng</th>
               {attendanceTimes.map((time, index) => (
                 <th key={index} scope="col" className="w-6 text-center">{time}</th>
               ))}
-              <th scope="col" className="px-6 py-3 text-center">Số lần vắng</th>
             </tr>
           </thead>
           <tbody>
@@ -197,10 +196,10 @@ const Attendance = () => {
                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {index + 1}
                 </th>
-                <td className="px-6 py-4">{user.code}</td>
-                <td className="px-6 py-4">{user.username}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
                 <td className="px-6 py-4">{user.dob}</td>  
                 <td className="px-6 py-4">{user.email}</td>
+                <td className="text-center">{absences[user.id]?.unexcusedAbsenceCount || 0}</td>
                 {attendanceTimes.map((time, index) => {
                   const attendance = user.attendanceRecords.find((a) => a.attendanceTime === time) || { status: 'PRESENT' };
                   const isExcused = attendance.status === 'ABSENT_EXCUSED';
@@ -224,7 +223,6 @@ const Attendance = () => {
                 {/* {absences.map((absence, index) => (
                   <td key={index}>{absence.unexcusedAbsenceCount}</td>
                 ))} */}
-                <td className="text-center">{absences[user.id]?.unexcusedAbsenceCount || 0}</td>
               </tr>
             ))}
           </tbody>

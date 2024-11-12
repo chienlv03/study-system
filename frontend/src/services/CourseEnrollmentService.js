@@ -29,9 +29,9 @@ export const enrollCourse = (userId, courseId, classCode) => api.post(`${COURSE_
 
 export const updateScore = (enrollmentId, scores) => api.put(`${COURSE_API_BASE_URL}update/${enrollmentId}/scores`, scores);
 
-export const getEnrollInCourse = (courseId, userId) => api.get(`${COURSE_API_BASE_URL}get/courseEnrollment/course/${courseId}/user/${userId}`);
+export const getEnrollInCourse = (courseId, userId) => api.get(`${COURSE_API_BASE_URL}get/enrollment/course/${courseId}/user/${userId}`);
 
-export const getEnrollByUserId = (userId) => api.get(`${COURSE_API_BASE_URL}get/courseEnrollments/user/${userId}`);
+export const getEnrollByUserId = (userId) => api.get(`${COURSE_API_BASE_URL}get/enrollments/user/${userId}`);
 
 export const getUserInCourse = (courseId) => api.get(`${COURSE_API_BASE_URL}get/user/in/course/${courseId}`);
 

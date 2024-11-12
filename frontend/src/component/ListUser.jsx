@@ -123,7 +123,6 @@ const ListUser = () => {
           <thead className="text-xs sticky z-0 top-28 text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">STT</th>
-              <th scope="col" className="px-6 py-3">Mã sinh viên</th>
               <th scope="col" className="px-6 py-3">Họ Và Tên</th>
               <th scope="col" className="px-6 py-3">Ngày sinh</th>
               <th scope="col" className="px-6 py-3">Giới tính</th>
@@ -133,11 +132,10 @@ const ListUser = () => {
           </thead>
           <tbody>
             {users.map((user, index) => (
-              <tr key={index} className="text-center bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <tr key={index} className="text-center font-medium dark:text-white bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row" className="px-6 py-4 whitespace-nowrap">
                   {index + 1}
                 </th>
-                <td className="px-6 py-4">{user.code}</td>
                 <td className="px-6 py-4">{user.username}</td>
                 <td className="px-6 py-4">{user.dob}</td>
                 <td className="px-6 py-4">{user.gender}</td>
@@ -178,7 +176,7 @@ const ListUser = () => {
               {filteredUsers.map(user => (
                 <tr key={user.id} className="bg-white border-b dark:border-gray-800">
                   <th className="px-6 py-3 font-bold whitespace-nowrap dark:text-black">
-                    {user.username} - {user.code}
+                    {user.username}
                   </th>
                   <th onClick={() => handleAddUser(user.id)} className="font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="12.142A2" className="w-6 h-6">

@@ -21,8 +21,8 @@ const Score = () => {
             const initialScores = {};
             response.data.forEach(user => {
                 initialScores[user.enrollmentId] = {
-                    progressScore: user.progressScore,
-                    finalScore: user.finalScore
+                    progressScore: user.progressScore ?? '',
+                    finalScore: user.finalScore ?? ''
                 };
             });
             // console.log("initialScores", initialScores);
@@ -127,9 +127,6 @@ const Score = () => {
                     <thead className="text-xs sticky top-28 text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" className="px-6 py-3">
-                                Mã số sinh viên
-                            </th>
-                            <th scope="col" className="px-6 py-3">
                                 Họ và tên
                             </th>
                             <th scope="col" className="px-6 py-3 w-40 text-center">
@@ -142,16 +139,13 @@ const Score = () => {
                                 Điểm học phần
                             </th>
                             <th scope="col" className="px-6 py-3 text-center">
-                                Action
+                                
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
                             <tr key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {user.code}
-                                </th>
                                 <td className="px-6 py-4">
                                     {user.username}
                                 </td>

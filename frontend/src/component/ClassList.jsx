@@ -12,16 +12,17 @@ const ClassList = () => {
 
     const navigate = useNavigate();
 
-    const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
-    const userType = loginResponse.roles;
+    const user = JSON.parse(localStorage.getItem('loginResponse'));
+    const userType = user.roles;
 
     const fetchClassList = async () => {
         try {
             if (userType.includes('ROLE_TEACHER')) {
-                const response = await getAllCourseByUser(loginResponse.id);
+                const response = await getAllCourseByUser(user.id);
                 setClassList(response.data);
             } else if (userType.includes('ROLE_STUDENT')) {
-                const response = await getAllCourseTheUserParticipated(loginResponse.id);
+                const response = await getAllCourseTheUserParticipated(user.id);
+                console.log(response.data);
                 setClassList(response.data);
             }
         } catch (error) {
@@ -38,6 +39,9 @@ const ClassList = () => {
         localStorage.setItem('name', classItem.name);
         localStorage.setItem('classCode', classItem.classCode);
         localStorage.setItem('startTime', classItem.startTime);
+        localStorage.setItem('endTime', classItem.endTime);
+        localStorage.setItem('maxStudents', classItem.maxStudents);
+        localStorage.setItem('currentStudents', classItem.currentStudents);
         navigate(`/detail-class/${classItem.id}/list-student`);
     };
 
@@ -52,7 +56,7 @@ const ClassList = () => {
                 await deleteCourse(classId);
                 setClassList(classList.filter((classItem) => classItem.id !== classId));
             } else if (userType.includes('ROLE_STUDENT')) {
-                await removeUserFromCourse(loginResponse.id, classId);
+                await removeUserFromCourse(user.id, classId);
                 setClassList(classList.filter((classItem) => classItem.id !== classId));
             }
         } catch (error) {
@@ -66,7 +70,7 @@ const ClassList = () => {
 
     const handleAttendCourseByCode = async () => {
         try {
-            await enrollCourse(loginResponse.id, 0, classCode);
+            await enrollCourse(user.id, 0, classCode);
             setClassCode('');
             setShowJoinClassInput(false);
             fetchClassList();
@@ -168,6 +172,8 @@ const ClassList = () => {
                                 <li className="text-2xl w-64 line-clamp-1">Tên Lớp: {classItem.name}</li>
                                 <li className="text-lg">Mã lớp: {classItem.classCode}</li>
                                 <li className="text-lg">Thời gian bắt đầu: {classItem.startTime}</li>
+                                <li className="text-lg">Thời gian kết thúc: {classItem.endTime}</li>
+                                <li className="text-lg">Số lượng: {classItem.currentStudents}/{classItem.maxStudents}</li>
                             </ul>
                             <ul className="absolute z-20 my-2 h-10 flex right-0 top-0 bg-blue-300">
                                 {userType.includes('ROLE_TEACHER') && (

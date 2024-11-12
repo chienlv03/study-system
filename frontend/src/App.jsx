@@ -16,6 +16,9 @@ import Profile from './component/authComponent/Profile';
 import Score from './component/teacherComponent/Score';
 import InfoUser from './component/studentComponent/InfoUser';
 import LearnOutcomes from './component/studentComponent/LearnOutcomes';
+import Assignment from './component/Assignment';
+import AssignmentForm from './component/AssignmentForm';
+import Submission from './component/Submission';
 
 // eslint-disable-next-line react/prop-types
 function Layout({ children }) {
@@ -126,6 +129,39 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <InfoUser />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/detail-class/:id/assignment"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Assignment />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/detail-class/:id/assignment-form"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <AssignmentForm />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/detail-class/:id/submission"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Submission />
               </Layout>
             </ProtectedRoute>
           }

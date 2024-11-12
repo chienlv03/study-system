@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { signup } from '../../services/AuthService';
 
 const SignUpForm = () => {
-    const [code, setCode] = useState('');
     const [dob, setDob] = useState('');
     const [gender, setGender] = useState('');
     const [username, setUsername] = useState('');
@@ -21,7 +20,7 @@ const SignUpForm = () => {
             return;
         }
 
-        const data = { code, username, email, dob, gender, password, role: [role] };
+        const data = { username, email, dob, gender, password, role: [role] };
 
         try {
             await signup(data);
@@ -46,18 +45,7 @@ const SignUpForm = () => {
                             </h1>
                             <form className="space-y-4 md:space-y-6">
                                 <div className="grid md:grid-cols-2 md:gap-8">
-                                    <div>
-                                        <label htmlFor="code" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mã số</label>
-                                        <input
-                                            type="text"
-                                            id="code"
-                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="2024xxxx"
-                                            required=""
-                                            value={code}
-                                            onChange={(e) => setCode(e.target.value)}
-                                        />
-                                    </div>
+                                    
                                     <div className="flex items-center h-8 mt-8">
                                         <label htmlFor="role" className="block me-5 text-lg font-bold text-gray-900 dark:text-white">Bạn là:</label>
                                         <div className="flex items-center me-5">
