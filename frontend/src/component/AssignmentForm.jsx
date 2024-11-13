@@ -1,62 +1,79 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { createAssignment } from '../services/AssignmentService';
 import { createSubmission } from '../services/SubmissionService';
+import debounce from 'lodash.debounce';
 
 const AssignmentForm = () => {
     const [title, setTitle] = useState('');
     const [dueDate, setDueDate] = useState('');
-    const [formattedDueDate, setFormattedDueDate] = useState('');
     const [point, setPoint] = useState(false);
     const [content, setContent] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [error, setError] = useState('');
+    const [checkDate, setCheckDate] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [fileError, setFileError] = useState('');
 
     const navigate = useNavigate();
-    const loginResponse = JSON.parse(localStorage.getItem('loginResponse')) || {};
-    const userType = loginResponse.roles || [];
-    const isTeacher = userType.includes('ROLE_TEACHER');
-    const userId = loginResponse.id;
-    const assignmentId = localStorage.getItem('assignmentId');
-    const classId = localStorage.getItem('classId');
+    const loginResponse = useMemo(() => JSON.parse(localStorage.getItem('loginResponse')) || {}, []);
+    const userType = useMemo(() => loginResponse.roles || [], [loginResponse]);
+    const isTeacher = useMemo(() => userType.includes('ROLE_TEACHER'), [userType]);
+    const userId = useMemo(() => loginResponse.id, [loginResponse]);
+    const assignmentId = useMemo(() => localStorage.getItem('assignmentId'), []);
+    const classId = useMemo(() => localStorage.getItem('classId'), []);
 
-    const handleFileChange = (event) => setSelectedFiles(Array.from(event.target.files));
-    const removeFile = (indexToRemove) => setSelectedFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+    const handleFileChange = useCallback((event) => {
+        const files = Array.from(event.target.files).filter(file => {
+            if (file.size > 5242880 || !['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
+                setFileError('Chỉ cho phép tải lên file PDF, JPEG, PNG và kích thước tối đa 5MB');
+                return false;
+            }
+            return true;
+        });
+        setSelectedFiles(files);
+        setFileError('');
+    }, []);
 
-    const handleDueDateChange = (e) => {
-        const selectedDate = moment(e.target.value);
+    const removeFile = useCallback((indexToRemove) => {
+        setSelectedFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+    }, []);
+
+    const handleDueDateChange = useCallback((e) => {
+        const selectedDate = moment(e.target.value, "YYYY-MM-DDTHH:mm");
         const currentDate = moment();
 
         if (selectedDate.isBefore(currentDate)) {
-            setError("Hạn nộp bài phải sau thời gian hiện tại");
+            setCheckDate("Hạn nộp bài phải sau thời gian hiện tại");
         } else {
-            setDueDate(selectedDate.format('YYYY-MM-DDTHH:mm')); 
-            setFormattedDueDate(selectedDate.format('DD-MM-YYYY HH:mm'));
+            // Chuyển đổi sang định dạng phù hợp cho LocalDateTime trước khi gửi lên backend
+            const formattedDate = selectedDate.format("YYYY-MM-DDTHH:mm:ss");  // Định dạng đầy đủ với giây
+            setDueDate(formattedDate);
+            setCheckDate('');
         }
-    };
+    }, []);
+
+
+    const handleContentChange = useCallback(debounce((value) => setContent(value), 300), [setContent]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const currentTime = moment().format('DD-MM-YYYY HH:mm');
 
         const assignment = {
             title,
             content,
-            assignedDate: currentTime,
-            dueDate: formattedDueDate,
+            dueDate,
             point,
             courseId: classId,
-            userId
+            userId: userId
         };
 
         const submission = {
             content,
-            submittedDate: currentTime,
             userId,
             assignmentId,
             courseId: classId
@@ -71,12 +88,11 @@ const AssignmentForm = () => {
                 navigate(`/detail-class/${classId}/assignment`);
             }
         } catch (error) {
+            setError('Có lỗi xảy ra trong quá trình tải lên, vui lòng thử lại.');
             console.error('Error uploading assignment:', error);
         } finally {
             setLoading(false);
         }
-
-        console.log('Assignment submitted:', assignment);
     };
 
     return (
@@ -91,7 +107,7 @@ const AssignmentForm = () => {
                         </button>
                     )}
                     <button type="submit" disabled={loading} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        {loading ? 'Submitting...' : 'Submit'}
+                        {loading ? 'Đang nộp...' : 'Nộp'}
                     </button>
                 </div>
 
@@ -113,8 +129,9 @@ const AssignmentForm = () => {
                                     type="datetime-local"
                                     value={dueDate}
                                     onChange={handleDueDateChange}
-                                    className="ml-2 bg-gray-50 border-b border-gray-300 text-sm focus:outline-none w-full px-2.5" />
-                                {error && <p className="text-red-500 text-xs mt-1 ml-20">{error}</p>}
+                                    className="ml-2 bg-gray-50 border-b border-gray-300 text-sm focus:outline-none w-full px-2.5"
+                                />
+                                {checkDate && <p className="text-red-500 text-xs mt-1 ml-20">{checkDate}</p>}
                             </div>
 
                             <div className="flex items-center">
@@ -145,7 +162,7 @@ const AssignmentForm = () => {
                 <div className="flex mb-5">
                     <label className="text-sm font-bold w-20">Nội dung:</label>
                     <div className="w-full ml-1">
-                        <ReactQuill value={content} onChange={setContent} />
+                        <ReactQuill value={content} onChange={handleContentChange} />
                     </div>
                 </div>
 
@@ -163,16 +180,26 @@ const AssignmentForm = () => {
                     </ul>
                 )}
 
+                {fileError && <p className="text-red-500 text-xs mt-1 ml-20">{fileError}</p>}
+
                 <div className="font-bold ml-20">
-                    <label className="flex w-20 items-center cursor-pointer">
+                    <label className="flex items-center cursor-pointer">
                         <svg className="h-4 w-4 text-gray-800" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" />
-                            <path d="M15 7l-6.5 6.5a1.5 1.5 0 0 0 3 3l6.5 -6.5a3 3 0 0 0 -6 -6l-6.5 6.5a4.5 4.5 0 0 0 9 9l6.5 -6.5" />
+                            <path d="M15 7l-6.5 6.5a1.5 1.5 0 0 0 3 3l6.5 -6.5a1.5 1.5 0 0 0 -3 -3" />
+                            <path d="M9 15l-2.5 2.5a1.5 1.5 0 0 1 -3 -3l2.5 -2.5" />
+                            <path d="M16 5l3 3" />
                         </svg>
-                        Attach
-                        <input type="file" multiple className="hidden" onChange={handleFileChange} />
+                        <span className="ml-2 text-sm">đính kèm</span>
                     </label>
+                    <input
+                        type="file"
+                        multiple
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
                 </div>
+                {error && <p className="text-red-500 text-xs mt-1 ml-20">{error}</p>}
             </form>
         </div>
     );
