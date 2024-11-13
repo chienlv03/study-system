@@ -22,7 +22,6 @@ const ClassList = () => {
                 setClassList(response.data);
             } else if (userType.includes('ROLE_STUDENT')) {
                 const response = await getAllCourseTheUserParticipated(user.id);
-                console.log(response.data);
                 setClassList(response.data);
             }
         } catch (error) {

@@ -66,13 +66,6 @@ const Submission = () => {
         return imageExtensions.includes(extension);
     };
 
-    // const handleInputChange = (index, field, value) => {
-    //     const updatedSubmissions = submissions.map((submission, i) =>
-    //         i === index ? { ...submission, [field]: value } : submission
-    //     );
-    //     setSubmissions(updatedSubmissions);
-    // };
-
     const handleUpdate = async (submissionId) => {
         try {
             await updateGradeAndFeedback(submissionId, grade, feedback);
@@ -97,7 +90,7 @@ const Submission = () => {
                         <polyline points="15 6 9 12 15 18" />
                     </svg>
                 </p>
-                <h1>Danh sách sinh viên nộp bài tập {assignmentTitle}</h1>
+                {userType.includes('ROLE_TEACHER') ? <h1>Danh sách sinh viên nộp bài tập {assignmentTitle}</h1> : <h1>Bài tập đã nộp</h1>}
             </header>
             {submissions.length > 0 ? (
                 submissions.map((submission, index) => (
@@ -105,9 +98,10 @@ const Submission = () => {
                         <div className="relative p-3 rounded-lg bg-gray-400 drop-shadow-xl flex justify-between">
                             <div onClick={() => toggleDropdown(index, submission.id)} className="w-full">
                                 <p>Họ tên sinh viên: {submission.username}</p>
+                                <p>Tiêu đề: {submission.title}</p>
                                 <p>Thời gian nộp: {submission.submittedDate} {submission.isLate && 'Muộn'}</p>
                             </div>
-                            <div className="content-center">{submission.grade}/10</div>
+                            {submission.point && <div className="content-center">{submission.grade}/10</div>}
                         </div>
                         {isDropdownVisible === index && (
                             <div className="p-3 relative">
@@ -119,8 +113,7 @@ const Submission = () => {
                                 ) : (
                                     <p className="border border-gray-200 rounded-lg p-3 w-1/2">Trống</p>
                                 )}
-                                <div className="absolute top-5 right-5 text-wrap italic w-80">Nhận xét: {submission.feedback}</div>
-
+                                {submission.feedback && <div className="absolute top-5 right-5 text-wrap italic w-80">Nhận xét: {submission.feedback}</div>}
                                 <div className="mt-4">
                                     <ul>
                                         {files.map((file, i) => (
@@ -133,7 +126,7 @@ const Submission = () => {
                                                     />
                                                 ) : (
                                                     <a
-                                                        className="text-sm border border-blue-300 rounded-lg p-2 bg-gray-300"
+                                                        className="text-sm border w-1/2 border-blue-300 rounded-lg p-2 bg-gray-300"
                                                         href={`data:${file.fileType};base64,${file.fileData}`}
                                                         download={file.fileName}
                                                         target="_blank"
@@ -170,13 +163,15 @@ const Submission = () => {
                                                     value={feedback ?? ''}
                                                     onChange={(e) => setFeedback(e.target.value)}
                                                 />
-                                                <input
-                                                    className="w-16 text-center focus:outline-none rounded-md ml-2 p-2 bg-gray-200"
-                                                    type="text"
-                                                    placeholder="Điểm"
-                                                    value={grade ?? ''}
-                                                    onChange={(e) => setGrade(e.target.value)}
-                                                />
+                                                {submission.point && (
+                                                    <input
+                                                        className="w-16 text-center focus:outline-none rounded-md ml-2 p-2 bg-gray-200"
+                                                        type="text"
+                                                        placeholder="Điểm"
+                                                        value={grade ?? ''}
+                                                        onChange={(e) => setGrade(e.target.value)}
+                                                    />
+                                                )}
                                                 <button
                                                     className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm ml-2 px-3 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none"
                                                 >
