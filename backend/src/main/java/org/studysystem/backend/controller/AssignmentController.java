@@ -13,6 +13,7 @@ import org.studysystem.backend.dto.response.AssignmentResponse;
 import org.studysystem.backend.service.AssignmentService;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
@@ -34,17 +35,13 @@ public class AssignmentController {
         return ResponseEntity.ok("Assignment uploaded successfully!");
     }
 
-    @PutMapping(value = "/{assignmentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> updateAssignment(@PathVariable Long assignmentId,
-                                                   @Valid @RequestPart("assignment") String assignmentJson,
-                                                   @RequestPart(value = "files", required = false) MultipartFile[] files) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        AssignmentRequest assignmentRequest = objectMapper.readValue(assignmentJson, AssignmentRequest.class);
-        assignmentService.updateAssignment(assignmentId, assignmentRequest, files);
-
-        return ResponseEntity.ok("Assignment updated successfully!");
+    @PatchMapping(value = "/{assignmentId}/due-date")
+    public ResponseEntity<String> updateDueDate(@PathVariable Long assignmentId, @RequestBody Map<String, String> payload) {
+        String dueDate = payload.get("dueDate");
+        assignmentService.updateDueDate(assignmentId, dueDate);
+        return ResponseEntity.ok("Due date updated successfully!");
     }
+
 
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<AssignmentResponse>> getAssignmentsByCourse(@PathVariable Long courseId) {

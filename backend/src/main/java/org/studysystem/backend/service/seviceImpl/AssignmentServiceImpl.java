@@ -13,7 +13,6 @@ import org.studysystem.backend.entity.User;
 import org.studysystem.backend.mapper.AssignmentMapper;
 import org.studysystem.backend.repository.AssignmentFileRepository;
 import org.studysystem.backend.repository.AssignmentRepository;
-import org.studysystem.backend.repository.SubmissionRepository;
 import org.studysystem.backend.service.AssignmentService;
 import org.studysystem.backend.utils.FileUtil;
 import org.studysystem.backend.utils.FindEntity;
@@ -60,23 +59,10 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Transactional
     @Override
-    public void updateAssignment(Long assignmentId, AssignmentRequest updatedAssignmentRequest, MultipartFile[] files) {
-        Assignment existingAssignment = findEntity.findAssignment(assignmentId);
-
-        // Update assignment details
-        assignmentMapper.updateAssignmentFromRequest(updatedAssignmentRequest, existingAssignment);
-
-        // If files are provided, update them
-        if (files != null) {
-            // Delete old files from the file system and database
-            existingAssignment.getFiles().forEach(file -> fileUtil.deleteFile(file.getFilePath()));
-            assignmentFileRepository.deleteByAssignmentId(existingAssignment.getId());
-
-            // Save new files
-            saveFilesForAssignment(files, existingAssignment);
-        }
-
-        assignmentRepository.save(existingAssignment);
+    public void updateDueDate(Long assignmentId, String dueDate) {
+        Assignment assignment = findEntity.findAssignment(assignmentId);
+        assignment.setDueDate(dueDate);
+        assignmentRepository.save(assignment);
     }
 
 
@@ -99,22 +85,6 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         // Delete the assignment
         assignmentRepository.delete(assignment);
-    }
-
-    private void saveFilesForAssignment(MultipartFile[] files, Assignment assignment) {
-        if (files == null) return;
-
-        for (MultipartFile file : files) {
-            String filePath = fileUtil.saveFile(file);
-            if (filePath != null) {
-                AssignmentFile assignmentFile = new AssignmentFile();
-                assignmentFile.setFileName(file.getOriginalFilename());
-                assignmentFile.setFilePath(filePath);
-                assignmentFile.setAssignment(assignment);
-
-                assignmentFileRepository.save(assignmentFile);
-            }
-        }
     }
 }
 

@@ -14,6 +14,4 @@ public interface AssignmentMapper {
     @Mapping(source = "course.name", target = "courseName")
     @Mapping(source = "user.username", target = "userName")
     AssignmentResponse toAssignmentResponse(Assignment assignment);
-
-    void updateAssignmentFromRequest(AssignmentRequest request, @MappingTarget Assignment assignment);
 }

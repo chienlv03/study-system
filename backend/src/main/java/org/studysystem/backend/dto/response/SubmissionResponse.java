@@ -12,5 +12,7 @@ public class SubmissionResponse {
     private Double grade;
     private String feedback;
     private boolean isLate;
+    private boolean point;
+    private String title;
     private String username;
 }

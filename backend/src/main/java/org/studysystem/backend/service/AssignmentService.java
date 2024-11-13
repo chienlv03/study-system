@@ -12,7 +12,7 @@ public interface AssignmentService {
     void createAssignment(AssignmentRequest assignmentRequest, MultipartFile[] files);
 
     @Transactional
-    void updateAssignment(Long assignmentId, AssignmentRequest updatedAssignmentRequest, MultipartFile[] files);
+    void updateDueDate(Long assignmentId, String dueDate);
 
     List<AssignmentResponse> getAssignmentsByCourseId(Long courseId);
 
