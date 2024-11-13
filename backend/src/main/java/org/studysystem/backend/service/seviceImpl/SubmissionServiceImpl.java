@@ -40,14 +40,15 @@ public class SubmissionServiceImpl implements SubmissionService {
         Course course = findEntity.findCourse(submissionRequest.getCourseId());
 
         Submission submission = submissionMapper.toSubmission(submissionRequest);
+        submission.setSubmittedDate(LocalDateTime.now());
         submission.setAssignment(assignment);
         submission.setUser(user);
         submission.setCourse(course);
 
-        LocalDateTime dueDate = LocalDateTime.parse(assignment.getDueDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-        LocalDateTime submittedDate = LocalDateTime.parse(submissionRequest.getSubmittedDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+//        LocalDateTime dueDate = LocalDateTime.parse(assignment.getDueDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+//        LocalDateTime submittedDate = LocalDateTime.parse(submissionRequest.getSubmittedDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
 
-        submission.setLate(submittedDate.isAfter(dueDate));
+        submission.setLate(submission.getSubmittedDate().isAfter(assignment.getDueDate()));
 
         Submission savedSubmission = submissionRepository.save(submission);
         assignment.setTotalSubmissions(submissionRepository.countTotalSubmissionsByAssignmentId(assignment.getId()));

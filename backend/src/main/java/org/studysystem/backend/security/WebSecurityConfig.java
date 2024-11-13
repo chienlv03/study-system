@@ -1,5 +1,7 @@
 package org.studysystem.backend.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,6 +72,14 @@ public class WebSecurityConfig {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    // Đăng ký module để xử lý Java 8 date/time (LocalDateTime, etc.)
+    mapper.registerModule(new JavaTimeModule());
+    return mapper;
   }
 
   // Định nghĩa cấu hình bảo mật HTTP

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Persistent;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -28,9 +27,9 @@ public class Assignment {
     @Lob
     private String content;
 
-    private String assignedDate;
+    private LocalDateTime assignedDate;
 
-    private String dueDate;
+    private LocalDateTime dueDate;
 
     private boolean point;
 
@@ -44,10 +43,10 @@ public class Assignment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; 
 
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AssignmentFile> files = new HashSet<>();  // Danh sách tệp đính kèm
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<AssignmentFile> files = new HashSet<>();
 
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Submission> submissions = new HashSet<>();  // Danh sách bài nộp
+    private Set<Submission> submissions = new HashSet<>();
 }
 

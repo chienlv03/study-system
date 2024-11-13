@@ -1,9 +1,12 @@
 package org.studysystem.backend.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,10 +17,7 @@ public class AssignmentRequest {
 
     private String content;
 
-    @NotBlank(message = "Assigned Date is required")
-    private String assignedDate;
-
-    private String dueDate;
+    private LocalDateTime dueDate;
 
     @JsonProperty("point")
     private boolean point;

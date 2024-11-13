@@ -3,6 +3,7 @@ package org.studysystem.backend.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,9 +15,9 @@ public class AssignmentResponse {
 
     private String content;
 
-    private String dueDate;
+    private LocalDateTime dueDate;
 
-    private String assignedDate;
+    private LocalDateTime assignedDate;
 
     private boolean point;
 

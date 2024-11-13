@@ -18,7 +18,7 @@ public class SubmissionFile {
 
     private String filePath;  // Đường dẫn lưu trữ tệp trên hệ thống tệp
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submission_id", nullable = false)
     private Submission submission;  // Liên kết với lần nộp bài
 }

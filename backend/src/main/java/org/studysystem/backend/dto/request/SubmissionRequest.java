@@ -8,8 +8,6 @@ import lombok.Setter;
 public class SubmissionRequest {
     private String content;
 
-    private String submittedDate;
-
     private Long assignmentId;
 
     private Long userId;

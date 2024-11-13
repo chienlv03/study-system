@@ -12,6 +12,7 @@ import org.studysystem.backend.dto.request.AssignmentRequest;
 import org.studysystem.backend.dto.response.AssignmentResponse;
 import org.studysystem.backend.service.AssignmentService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +37,8 @@ public class AssignmentController {
     }
 
     @PatchMapping(value = "/{assignmentId}/due-date")
-    public ResponseEntity<String> updateDueDate(@PathVariable Long assignmentId, @RequestBody Map<String, String> payload) {
-        String dueDate = payload.get("dueDate");
+    public ResponseEntity<String> updateDueDate(@PathVariable Long assignmentId, @RequestBody Map<String, LocalDateTime> payload) {
+        LocalDateTime dueDate = payload.get("dueDate");
         assignmentService.updateDueDate(assignmentId, dueDate);
         return ResponseEntity.ok("Due date updated successfully!");
     }

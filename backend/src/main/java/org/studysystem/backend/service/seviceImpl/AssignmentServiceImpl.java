@@ -1,6 +1,7 @@
 package org.studysystem.backend.service.seviceImpl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import org.studysystem.backend.service.AssignmentService;
 import org.studysystem.backend.utils.FileUtil;
 import org.studysystem.backend.utils.FindEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,29 +39,20 @@ public class AssignmentServiceImpl implements AssignmentService {
         User user = findEntity.findUser(assignmentRequest.getUserId());
 
         Assignment assignment = assignmentMapper.toAssignment(assignmentRequest);
+        assignment.setAssignedDate(LocalDateTime.now());
         assignment.setCourse(course);
         assignment.setUser(user);
 
         Assignment savedAssignment = assignmentRepository.save(assignment);
 
         if (files != null) {
-            for (MultipartFile file : files) {
-                String filePath = fileUtil.saveFile(file);
-                if (filePath != null) {
-                    AssignmentFile assignmentFile = new AssignmentFile();
-                    assignmentFile.setFileName(file.getOriginalFilename());
-                    assignmentFile.setFilePath(filePath);
-                    assignmentFile.setAssignment(savedAssignment);
-
-                    assignmentFileRepository.save(assignmentFile);
-                }
-            }
+            saveAssignmentFiles(files, savedAssignment);
         }
     }
 
     @Transactional
     @Override
-    public void updateDueDate(Long assignmentId, String dueDate) {
+    public void updateDueDate(Long assignmentId, LocalDateTime dueDate) {
         Assignment assignment = findEntity.findAssignment(assignmentId);
         assignment.setDueDate(dueDate);
         assignmentRepository.save(assignment);
@@ -67,6 +60,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 
     @Override
+    @Cacheable(value = "assignmentsByCourse", key = "#courseId")
     public List<AssignmentResponse> getAssignmentsByCourseId(Long courseId) {
         List<Assignment> assignments = assignmentRepository.findByCourseId(courseId);
         return assignments.stream()
@@ -86,6 +80,18 @@ public class AssignmentServiceImpl implements AssignmentService {
         // Delete the assignment
         assignmentRepository.delete(assignment);
     }
+
+    private void saveAssignmentFiles(MultipartFile[] files, Assignment savedAssignment) {
+        for (MultipartFile file : files) {
+            String filePath = fileUtil.saveFile(file);
+            if (filePath != null) {
+                AssignmentFile assignmentFile = new AssignmentFile();
+                assignmentFile.setFileName(file.getOriginalFilename());
+                assignmentFile.setFilePath(filePath);
+                assignmentFile.setAssignment(savedAssignment);
+                assignmentFileRepository.save(assignmentFile);
+            }
+        }
+    }
+
 }
-
-

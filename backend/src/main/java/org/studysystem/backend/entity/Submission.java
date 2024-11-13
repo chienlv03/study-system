@@ -3,6 +3,7 @@ package org.studysystem.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class Submission {
 
     private String content;
 
-    private String submittedDate;
+    private LocalDateTime submittedDate;
 
     private Double grade;
     private String feedback;
@@ -36,7 +37,7 @@ public class Submission {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<SubmissionFile> files = new HashSet<>();
 }
 
