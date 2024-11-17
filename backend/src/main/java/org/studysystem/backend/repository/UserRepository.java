@@ -13,8 +13,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
 
-    @Query(value = "SELECT * FROM User u JOIN roles r ON u.role_id = r.id WHERE r.name = 'ROLE_STUDENT' " +
-            "AND LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%')) LIMIT 5", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM users u " +
+            "JOIN user_roles ur ON u.id = ur.user_id " +
+            "JOIN roles r ON ur.role_id = r.id " +
+            "WHERE r.name = 'ROLE_STUDENT' " +
+            "AND LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "LIMIT 5",
+            nativeQuery = true)
     List<User> searchUsers(@Param("keyword") String keyword);
 
 
