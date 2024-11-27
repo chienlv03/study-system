@@ -14,6 +14,7 @@ public interface SubmissionMapper {
     @Mapping(source = "user.username", target = "username")
     @Mapping(source = "assignment.point", target = "point")
     @Mapping(source = "assignment.title", target = "title")
+    @Mapping(source = "assignment.id", target = "assignmentId")
     SubmissionResponse toSubmissionResponse(Submission submission);
 
     void updateSubmissionFromRequest(SubmissionRequest request, @MappingTarget Submission submission);

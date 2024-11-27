@@ -1,7 +1,12 @@
 package org.studysystem.backend.service.seviceImpl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 import org.studysystem.backend.entity.Course;
@@ -11,14 +16,19 @@ import org.studysystem.backend.exception.BadRequestException;
 import org.studysystem.backend.mapper.EnrollmentMapper;
 import org.studysystem.backend.repository.CourseRepository;
 import org.studysystem.backend.repository.EnrollmentRepository;
+import org.studysystem.backend.repository.UserRepository;
 import org.studysystem.backend.service.EnrollmentService;
 import org.studysystem.backend.utils.FindEntity;
 import org.studysystem.backend.utils.MessageConstants;
 import org.studysystem.backend.utils.Validation;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +37,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
     private final EnrollmentMapper enrollmentMapper;
     private final FindEntity findEntity;
     private final Validation validation;
@@ -56,13 +67,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         course.setCurrentStudents(course.getCurrentStudents() + 1);
         courseRepository.save(course);
     }
-
-//    private void updateCurrentStudent(Long courseId) {
-//        Course course = findEntity.findCourse(courseId);
-//        int currentStudent = enrollmentRepository.countByCourseId(courseId);
-//        course.setCurrentStudents(currentStudent);
-//        courseRepository.save(course);
-//    }
 
     @Override
     public LearnBecomesResponse updateScores(Long enrollmentId, UpdateScoresRequest request) {
@@ -164,4 +168,68 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> importStudents(MultipartFile file, Long courseId) {
+        List<String> errorMessages = new ArrayList<>();
+
+        // Lấy lớp học từ courseId
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isEmpty()) {
+            throw new IllegalArgumentException("Course with ID '" + courseId + "' does not exist.");
+        }
+        Course course = optionalCourse.get();
+
+        List<String> emailsFromFile = new ArrayList<>();
+
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            int rowCount = 0;
+
+            for (Row row : sheet) {
+                if (rowCount++ == 0) continue; // Bỏ qua dòng tiêu đề
+                String email = row.getCell(0).getStringCellValue().trim();
+                emailsFromFile.add(email);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading Excel file: " + e.getMessage());
+        }
+
+        // Kiểm tra tất cả email trong cơ sở dữ liệu
+        List<User> users = userRepository.findByEmailIn(emailsFromFile);
+        Set<String> existingEmails = users.stream().map(User::getEmail).collect(Collectors.toSet());
+
+        for (String email : emailsFromFile) {
+            if (!existingEmails.contains(email)) {
+                errorMessages.add("Email '" + email + "' does not exist.");
+            }
+        }
+
+        // Nếu có lỗi, trả về danh sách lỗi và không thực hiện enroll
+        if (!errorMessages.isEmpty()) {
+            return errorMessages;
+        }
+
+        // Thêm sinh viên vào lớp nếu tất cả email hợp lệ
+        int currentStudents = 0;
+        for (User user : users) {
+            boolean alreadyEnrolled = enrollmentRepository.existsByUserAndCourse(user, course);
+            if (alreadyEnrolled) {
+                errorMessages.add("User '" + user.getEmail() + "' is already enrolled in the course.");
+                continue;
+            }
+
+            Enrollment enrollment = new Enrollment();
+            enrollment.setUser(user);
+            enrollment.setCourse(course);
+            enrollmentRepository.save(enrollment);
+            currentStudents++;
+        }
+
+        if (currentStudents > 0) {
+            course.setCurrentStudents(course.getCurrentStudents() + currentStudents);
+            courseRepository.save(course);
+        }
+
+        return errorMessages;
+    }
 }

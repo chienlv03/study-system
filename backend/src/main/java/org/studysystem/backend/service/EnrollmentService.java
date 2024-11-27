@@ -1,5 +1,6 @@
 package org.studysystem.backend.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 
@@ -26,4 +27,6 @@ public interface EnrollmentService {
     List<UserAttendanceResponse> getAllUsersAndAttendanceInCourse(Long courseId);
 
     List<GradeResponse> getGradesForCourse(Long courseId);
+
+    List<String> importStudents(MultipartFile file, Long courseId);
 }

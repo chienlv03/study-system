@@ -8,6 +8,7 @@ import org.studysystem.backend.dto.request.SubmissionRequest;
 import org.studysystem.backend.dto.request.UpdateGradeAndFeedbackRequest;
 import org.studysystem.backend.dto.response.SubmissionResponse;
 import org.studysystem.backend.entity.*;
+import org.studysystem.backend.exception.BadRequestException;
 import org.studysystem.backend.mapper.SubmissionMapper;
 import org.studysystem.backend.repository.AssignmentRepository;
 import org.studysystem.backend.repository.SubmissionFileRepository;
@@ -17,7 +18,6 @@ import org.studysystem.backend.utils.FileUtil;
 import org.studysystem.backend.utils.FindEntity;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,26 +35,57 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional
     @Override
     public void createSubmission(SubmissionRequest submissionRequest, MultipartFile[] files) {
+        // Tìm các entity liên quan
         Assignment assignment = findEntity.findAssignment(submissionRequest.getAssignmentId());
         User user = findEntity.findUser(submissionRequest.getUserId());
         Course course = findEntity.findCourse(submissionRequest.getCourseId());
 
-        Submission submission = submissionMapper.toSubmission(submissionRequest);
+        // Tìm submission cũ nếu tồn tại
+        Submission existingSubmission = submissionRepository
+                .findByAssignmentIdAndUserId(assignment.getId(), user.getId());
+
+
+        Submission submission;
+
+        if (existingSubmission != null) {
+            // Nếu submission tồn tại, ghi đè
+            submission = existingSubmission;
+            submissionMapper.updateSubmissionFromRequest(submissionRequest, submission); // Hàm mapper cập nhật
+        } else {
+            // Nếu submission không tồn tại, tạo mới
+            submission = submissionMapper.toSubmission(submissionRequest);
+            submission.setAssignment(assignment);
+            submission.setUser(user);
+            submission.setCourse(course);
+        }
+
+        // Cập nhật thông tin submission
         submission.setSubmittedDate(LocalDateTime.now());
-        submission.setAssignment(assignment);
-        submission.setUser(user);
-        submission.setCourse(course);
-
-//        LocalDateTime dueDate = LocalDateTime.parse(assignment.getDueDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-//        LocalDateTime submittedDate = LocalDateTime.parse(submissionRequest.getSubmittedDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-
         submission.setLate(submission.getSubmittedDate().isAfter(assignment.getDueDate()));
 
+        // Lưu submission
         Submission savedSubmission = submissionRepository.save(submission);
+
+        // Cập nhật tổng số submissions cho assignment
         assignment.setTotalSubmissions(submissionRepository.countTotalSubmissionsByAssignmentId(assignment.getId()));
         assignmentRepository.save(assignment);
 
+        // Xử lý file
+        if (existingSubmission != null) {
+            // Xóa các file cũ nếu submission đã tồn tại
+            deleteFilesForSubmission(existingSubmission);
+        }
         saveFilesForSubmission(files, savedSubmission);
+    }
+
+
+    @Override
+    public String checkSubmitted(Long assignmentId, Long userId) {
+        if (submissionRepository.existsByAssignmentIdAndUserId(assignmentId, userId)) {
+            return "true";
+        } else {
+            return "false";
+        }
     }
 
     @Transactional
@@ -121,4 +152,13 @@ public class SubmissionServiceImpl implements SubmissionService {
             }
         }
     }
+
+    private void deleteFilesForSubmission(Submission submission) {
+        List<SubmissionFile> files = submissionFileRepository.findBySubmissionId(submission.getId());
+        files.forEach(file -> {
+            fileUtil.deleteFile(file.getFilePath()); // Hàm xóa file
+            submissionFileRepository.delete(file);
+        });
+    }
+
 }

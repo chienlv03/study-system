@@ -1,5 +1,6 @@
 package org.studysystem.backend.service.seviceImpl;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.studysystem.backend.utils.FileUtil;
 import org.studysystem.backend.utils.FindEntity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,14 +52,18 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
     }
 
-    @Transactional
     @Override
-    public void updateDueDate(Long assignmentId, LocalDateTime dueDate) {
-        Assignment assignment = findEntity.findAssignment(assignmentId);
-        assignment.setDueDate(dueDate);
+    public void updateDueDate(Long id, LocalDateTime newDueDate) {
+        Assignment assignment = findEntity.findAssignment(id);
+
+        // Logic kiểm tra hạn nộp
+        if (newDueDate.isBefore(assignment.getAssignedDate())) {
+            throw new IllegalArgumentException("Hạn nộp không thể trước ngày giao bài.");
+        }
+
+        assignment.setDueDate(newDueDate);
         assignmentRepository.save(assignment);
     }
-
 
     @Override
     @Cacheable(value = "assignmentsByCourse", key = "#courseId")

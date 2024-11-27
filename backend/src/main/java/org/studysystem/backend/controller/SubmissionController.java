@@ -35,6 +35,11 @@ public class SubmissionController {
         return ResponseEntity.ok("Submission uploaded successfully!");
     }
 
+    @GetMapping("/assignment/{assignmentId}/user/{userId}")
+    public ResponseEntity<String> checkIsSubmitted(@PathVariable Long assignmentId, @PathVariable Long userId) {
+        return ResponseEntity.ok(submissionService.checkSubmitted(assignmentId, userId));
+    }
+
     @PutMapping(value = "/{submissionId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateSubmission(@PathVariable Long submissionId,
                                                    @Valid @RequestPart("submission") String submissionJson,

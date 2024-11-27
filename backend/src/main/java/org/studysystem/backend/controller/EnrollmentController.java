@@ -1,6 +1,7 @@
 package org.studysystem.backend.controller;
 
 import  lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 import org.studysystem.backend.service.EnrollmentService;
@@ -80,5 +81,20 @@ public class EnrollmentController {
     public ResponseEntity<List<GradeResponse>> getGradesInCourse(@PathVariable Long courseId) {
         List<GradeResponse> gradeResponses = enrollmentService.getGradesForCourse(courseId);
         return ResponseEntity.ok(gradeResponses);
+    }
+
+    @PostMapping("/import/course/{courseId}")
+    public ResponseEntity<?> importStudents(@RequestParam("file") MultipartFile file,
+                                            @PathVariable Long courseId) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty.");
+        }
+
+        List<String> errors = enrollmentService.importStudents(file, courseId);
+
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        return ResponseEntity.ok("Students imported successfully into course with ID " + courseId);
     }
 }

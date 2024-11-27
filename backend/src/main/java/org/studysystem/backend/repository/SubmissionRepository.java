@@ -15,4 +15,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     @Query("SELECT COUNT(s) FROM Submission s WHERE s.assignment.id = :assignmentId")
     int countTotalSubmissionsByAssignmentId(@Param("assignmentId") Long assignmentId);
 
+    boolean existsByAssignmentIdAndUserId(Long assignmentId, Long userId);
+
+    Submission findByAssignmentIdAndUserId(Long assignmentId, Long userId);
 }

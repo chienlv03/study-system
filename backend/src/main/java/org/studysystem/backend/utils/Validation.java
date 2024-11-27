@@ -7,6 +7,7 @@ import org.studysystem.backend.repository.EnrollmentRepository;
 import org.studysystem.backend.repository.CourseRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -25,19 +26,13 @@ public class Validation {
         }
     }
 
-    public void validateCourseTime(String startTime, String endTime) {
-        try {
-            // Convert strings to LocalTime
-            LocalTime start = LocalTime.parse(startTime, TIME_FORMATTER);
-            LocalTime end = LocalTime.parse(endTime, TIME_FORMATTER);
-
-            // Check if start time is before end time
-            if (!start.isBefore(end)) {
-                throw new IllegalArgumentException("Start time must be before end time.");
-            }
-
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid time format. Please use 'HH:mm'.", e);
+    public void validateCourseTime(LocalTime startTime, LocalTime endTime) {
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("Start time and end time cannot be null.");
+        }
+        if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time.");
         }
     }
+
 }

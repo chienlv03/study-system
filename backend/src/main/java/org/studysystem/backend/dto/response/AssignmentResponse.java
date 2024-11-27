@@ -16,10 +16,10 @@ public class AssignmentResponse {
 
     private String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime dueDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime assignedDate;
 
     private boolean point;

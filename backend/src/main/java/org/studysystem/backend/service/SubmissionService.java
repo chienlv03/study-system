@@ -12,6 +12,8 @@ import java.util.List;
 public interface SubmissionService {
     void createSubmission(SubmissionRequest submissionRequest, MultipartFile[] files);
 
+    String checkSubmitted(Long assignmentId, Long userId);
+
     @Transactional
     void updateSubmission(Long submissionId, SubmissionRequest updatedSubmissionRequest, MultipartFile[] files);
 

@@ -2,19 +2,20 @@ package org.studysystem.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.studysystem.backend.dto.request.AssignmentRequest;
+import org.studysystem.backend.dto.request.UpdateDueDateRequest;
 import org.studysystem.backend.dto.response.AssignmentResponse;
 import org.studysystem.backend.service.AssignmentService;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
@@ -30,17 +31,19 @@ public class AssignmentController {
                                                    @RequestPart(value = "files", required = false) MultipartFile[] files) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         AssignmentRequest assignmentRequest = objectMapper.readValue(assignmentJson, AssignmentRequest.class);
         assignmentService.createAssignment(assignmentRequest, files);
 
         return ResponseEntity.ok("Assignment uploaded successfully!");
     }
 
-    @PatchMapping(value = "/{assignmentId}/due-date")
-    public ResponseEntity<String> updateDueDate(@PathVariable Long assignmentId, @RequestBody Map<String, LocalDateTime> payload) {
-        LocalDateTime dueDate = payload.get("dueDate");
-        assignmentService.updateDueDate(assignmentId, dueDate);
-        return ResponseEntity.ok("Due date updated successfully!");
+    @PutMapping("/{id}/due-date")
+    public ResponseEntity<String> updateDueDate(
+            @PathVariable Long id,
+            @RequestBody @Validated UpdateDueDateRequest request) {
+        assignmentService.updateDueDate(id, request.getDueDate());
+        return ResponseEntity.ok("Hạn nộp đã được cập nhật thành công.");
     }
 
 

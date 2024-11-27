@@ -74,14 +74,6 @@ public class WebSecurityConfig {
     return source;
   }
 
-  @Bean
-  public ObjectMapper objectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    // Đăng ký module để xử lý Java 8 date/time (LocalDateTime, etc.)
-    mapper.registerModule(new JavaTimeModule());
-    return mapper;
-  }
-
   // Định nghĩa cấu hình bảo mật HTTP
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

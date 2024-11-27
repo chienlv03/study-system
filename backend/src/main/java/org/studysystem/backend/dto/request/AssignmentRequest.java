@@ -17,7 +17,7 @@ public class AssignmentRequest {
 
     private String content;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime dueDate;
 
     @JsonProperty("point")

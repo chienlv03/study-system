@@ -1,6 +1,8 @@
 package org.studysystem.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.studysystem.backend.dto.request.CourseRequest;
@@ -19,12 +21,18 @@ public class CourseController {
     private final CourseService courseService;
 
 //    @PreAuthorize("hasRole('STUDENT')")
-    @PostMapping("/create/{userId}")
-    public ResponseEntity<CourseInfoResponse> createCourse(@RequestBody CourseRequest courseRequest, @PathVariable Long userId) {
-
+@PostMapping("/create/{userId}")
+public ResponseEntity<?> createCourse(@RequestBody @Valid CourseRequest courseRequest, @PathVariable Long userId) {
+    try {
         CourseInfoResponse createdCourse = courseService.createCourse(courseRequest, userId);
         return ResponseEntity.ok(createdCourse);
+    } catch (IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    } catch (Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred.");
     }
+}
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<CourseInfoResponse> updateClassRoom(@PathVariable Long id, @RequestBody CourseRequest courseRequest) {

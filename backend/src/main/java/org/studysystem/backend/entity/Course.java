@@ -1,11 +1,16 @@
 package org.studysystem.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,11 +36,11 @@ public class Course {
 
     private int currentStudents;
 
-    @NotBlank
-    private String startTime;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime startTime;
 
-    @NotBlank
-    private String endTime;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime endTime;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Enrollment> enrollments = new HashSet<>();
