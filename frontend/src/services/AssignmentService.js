@@ -16,7 +16,7 @@ export const createAssignment = (assignment, files) => {
     });
 };
 
-export const updateDueDate = (assignmentId, dueDate) => api.patch(REST_API_BASE_URL + '/' + assignmentId + '/due-date',  dueDate);
+export const updateDueDate = (assignmentId, dueDate) => api.put(REST_API_BASE_URL + '/' + assignmentId + '/due-date',  dueDate);
 
 export const getAssignmentBycourseId = (courseId) => api.get(REST_API_BASE_URL + '/course/' + courseId);
 

@@ -21,3 +21,7 @@ export const updateGradeAndFeedback = (submissionId, grade, feedback) => api.put
 export const getSubmissionByAssignment = (assignmentId) => api.get(REST_API_BASE_URL + "/assignment/" + assignmentId)
 
 export const getSubmissionByUserAndCourse = (userId, courseId) => api.get(REST_API_BASE_URL + "/user/" + userId + "/course/" + courseId)
+
+export const checkIsSubmitted = (assignmentId, userId) => api.get(REST_API_BASE_URL + "/assignment/" + assignmentId + "/user/" + userId)
+
+export const deleteSubmission = (submissionId, assignmentId) => api.delete(REST_API_BASE_URL + "/" + submissionId + "/assignment/" + assignmentId)

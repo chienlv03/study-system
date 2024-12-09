@@ -3,22 +3,22 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Header from "./component/Header";
 import ClassList from "./component/ClassList";
-import ListStudent from "./component/ListUser";
-import SidebarClass from "./component/SidebarClass";
+import ListUser from "./component/user/ListUser";
+import SidebarClass from "./component/sidebar/SidebarClass";
 import AddClassForm from "./component/teacherComponent/AddClassForm";
 import Home from "./component/Home";
 import SignUpForm from "./component/authComponent/SignUpForm";
 import LoginForm from "./component/authComponent/LoginForm";
-import Attendance from "./component/teacherComponent/Attendance";
+import Attendance from "./component/teacherComponent/attendance/Attendance";
 import ChangePassword from './component/authComponent/ChangePassword';
 import SidebarAuth from './component/authComponent/SidebarAuth';
 import Profile from './component/authComponent/Profile';
 import Score from './component/teacherComponent/Score';
 import InfoUser from './component/studentComponent/InfoUser';
 import LearnOutcomes from './component/studentComponent/LearnOutcomes';
-import Assignment from './component/Assignment';
-import AssignmentForm from './component/AssignmentForm';
-import Submission from './component/Submission';
+import Assignment from './component/assignment/Assignment';
+import AssignmentForm from './component/formAssignment/AssignmentForm';
+import Submission from './component/submisstion/Submission';
 
 // eslint-disable-next-line react/prop-types
 function Layout({ children }) {
@@ -75,7 +75,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <ListStudent />
+                <ListUser />
               </Layout>
             </ProtectedRoute>
           }

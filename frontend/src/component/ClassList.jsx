@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { deleteCourse, getAllCourseByUser } from '../services/CourseService';
-import { enrollCourse, getAllCourseTheUserParticipated, removeUserFromCourse } from '../services/CourseEnrollmentService';
+import { enrollCourse, getAllCourseTheUserParticipated, removeUserFromCourse } from '../services/EnrollmentService';
 
 const ClassList = () => {
     const [classList, setClassList] = useState([]);
@@ -120,7 +120,7 @@ const ClassList = () => {
                         onClick={() => navigate('/add-class-form')}
                         type="button"
                         className="flex text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 
-                        hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg 
+                        hover:bg-gradient-to-br focus:ring-4 focus:outline-none shadow-lg 
                         shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center 
                         mb-4 ml-5">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-1">
