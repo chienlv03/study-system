@@ -60,13 +60,6 @@ public class CourseServiceImpl implements CourseService {
         return String.format("%06d", randomDigits);
     }
 
-    public void updateCurrentStudent(Long courseId) {
-        Course course = findEntity.findCourse(courseId);
-        int currentStudent = enrollmentRepository.countByCourseId(courseId);
-        course.setCurrentStudents(currentStudent);
-        courseRepository.save(course);
-    }
-
     @Override
     public List<CourseInfoResponse> getAllCoursesByUserId(Long userId) {
         List<Course> courses = courseRepository.findAllByUserId(userId);
@@ -74,10 +67,6 @@ public class CourseServiceImpl implements CourseService {
                 .map(courseMapper::toCourseInfoResponse)
                 .collect(Collectors.toList());
     }
-
-//    public List<ClassRoom> getAllClassrooms() {
-//        return classroomRepository.findAll();
-//    }
 
     @Override
     public CourseInfoResponse updateCourse(Long id, CourseRequest courseRequest) {

@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class GradeResponse {
-    private Long enrollmentId;
+    private Long id;
+    private Long courseId;
     private Long userId;
     private String username;
     private Double progressScore;

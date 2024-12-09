@@ -2,7 +2,6 @@ package org.studysystem.backend.controller;
 
 import  lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 import org.studysystem.backend.service.EnrollmentService;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +21,6 @@ public class EnrollmentController {
     public ResponseEntity<MessageResponse> enrollUserInCourse(@PathVariable Long userId, @PathVariable(required = false) Long courseId, @RequestParam(required = false) String classCode){
         enrollmentService.enrollUserInCourse(userId, courseId, classCode);
         return ResponseEntity.ok(new MessageResponse("Đã thêm học sinh vào lớp"));
-    }
-
-    @PutMapping("/update/{enrollmentId}/scores")
-    public ResponseEntity<LearnBecomesResponse> updateScores(@PathVariable Long enrollmentId,
-                                                             @RequestBody UpdateScoresRequest request) {
-        LearnBecomesResponse response = enrollmentService.updateScores(enrollmentId, request);
-        return ResponseEntity.ok(response);
     }
 
     // lấy thông tin của 1 courseEnrollment
@@ -75,12 +67,6 @@ public class EnrollmentController {
     public ResponseEntity<List<UserAttendanceResponse>> getUserAndAttendanceInCourse(@PathVariable Long courseId) {
         List<UserAttendanceResponse> userAttendanceResponses = enrollmentService.getAllUsersAndAttendanceInCourse(courseId);
         return ResponseEntity.ok(userAttendanceResponses);
-    }
-
-    @GetMapping("/get/grade/in/course/{courseId}")
-    public ResponseEntity<List<GradeResponse>> getGradesInCourse(@PathVariable Long courseId) {
-        List<GradeResponse> gradeResponses = enrollmentService.getGradesForCourse(courseId);
-        return ResponseEntity.ok(gradeResponses);
     }
 
     @PostMapping("/import/course/{courseId}")

@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 import org.studysystem.backend.entity.Course;
 import org.studysystem.backend.entity.Enrollment;
@@ -16,6 +15,7 @@ import org.studysystem.backend.exception.BadRequestException;
 import org.studysystem.backend.mapper.EnrollmentMapper;
 import org.studysystem.backend.repository.CourseRepository;
 import org.studysystem.backend.repository.EnrollmentRepository;
+import org.studysystem.backend.repository.GradeRepository;
 import org.studysystem.backend.repository.UserRepository;
 import org.studysystem.backend.service.EnrollmentService;
 import org.studysystem.backend.utils.FindEntity;
@@ -23,8 +23,6 @@ import org.studysystem.backend.utils.MessageConstants;
 import org.studysystem.backend.utils.Validation;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +36,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final GradeRepository gradeRepository;
     private final EnrollmentMapper enrollmentMapper;
     private final FindEntity findEntity;
     private final Validation validation;
@@ -69,22 +68,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public LearnBecomesResponse updateScores(Long enrollmentId, UpdateScoresRequest request) {
-        Enrollment enrollment = findEntity.findCourseEnrollment(enrollmentId);
-
-        enrollment.setProgressScore(request.getProgressScore());
-        enrollment.setFinalScore(request.getFinalScore());
-
-        // Calculate courseScore based on provided coefficients
-        double courseScore = request.getProgressScore() * 0.3 +
-                request.getFinalScore() * 0.7;
-        BigDecimal formattedCourseScore = BigDecimal.valueOf(courseScore).setScale(2, RoundingMode.HALF_UP);
-        enrollment.setCourseScore(formattedCourseScore.doubleValue());
-        enrollmentRepository.save(enrollment);
-        return enrollmentMapper.toLearnBecomesResponse(enrollment);
-    }
-
-    @Override
     public LearnBecomesResponse getCourseEnrollment(Long userId, Long courseId) {
         Enrollment enrollment = findEntity.findByUserIdAndCourseId(userId, courseId);
         return enrollmentMapper.toLearnBecomesResponse(enrollment);
@@ -104,12 +87,14 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments.stream()
                 .map(enrollment -> {
                     User user = enrollment.getUser();
+                    boolean isScore = gradeRepository.existsByUserIdAndCourseId(user.getId(), courseId);
                     return UserResponse.builder()
                             .id(user.getId())
                             .username(user.getUsername())
                             .email(user.getEmail())
                             .dob(user.getDob())
                             .gender(user.getGender())
+                            .isScore(isScore)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -157,14 +142,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
         return enrollments.stream()
                 .map(enrollmentMapper::toUserAttendanceResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<GradeResponse> getGradesForCourse(Long courseId) {
-        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
-        return enrollments.stream()
-                .map(enrollmentMapper::toGradeResponse)
                 .collect(Collectors.toList());
     }
 

@@ -1,7 +1,6 @@
 package org.studysystem.backend.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import org.studysystem.backend.dto.request.UpdateScoresRequest;
 import org.studysystem.backend.dto.response.*;
 
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.List;
 public interface EnrollmentService {
 
     void enrollUserInCourse(Long userId, Long courseId, String classCode);
-
-    LearnBecomesResponse updateScores(Long enrollmentId, UpdateScoresRequest request);
 
     LearnBecomesResponse getCourseEnrollment(Long courseId, Long userId);
 
@@ -25,8 +22,6 @@ public interface EnrollmentService {
     void removeUserFromCourse(Long userId, Long courseId);
 
     List<UserAttendanceResponse> getAllUsersAndAttendanceInCourse(Long courseId);
-
-    List<GradeResponse> getGradesForCourse(Long courseId);
 
     List<String> importStudents(MultipartFile file, Long courseId);
 }

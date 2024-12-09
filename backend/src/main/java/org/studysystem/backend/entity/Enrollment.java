@@ -23,10 +23,6 @@ public class Enrollment {
     private int unexcusedAbsenceCount = 0;
     private int excusedAbsenceCount = 0;
 
-    private Double progressScore;
-    private Double finalScore;
-    private Double courseScore;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
