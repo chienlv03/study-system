@@ -24,4 +24,6 @@ public interface EnrollmentService {
     List<UserAttendanceResponse> getAllUsersAndAttendanceInCourse(Long courseId);
 
     List<String> importStudents(MultipartFile file, Long courseId);
+
+    List<LearnOutcomeResponse> getLearningOutcomesByUserId(Long userId);
 }

@@ -16,4 +16,5 @@ public class MessageConstants {
     public static final String ASSIGNMENT_NOT_FOUND = "Assignment not found";
     public static final String COURSE_FULL = "Lớp học đã đầy";
     public static final String SUBMISSION_NOT_FOUND = "Submission not found";
+    public static final String GRADE_NOT_FOUND = "Grade not found";
 }

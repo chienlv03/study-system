@@ -12,7 +12,6 @@ import org.studysystem.backend.mapper.GradeMapper;
 import org.studysystem.backend.repository.GradeRepository;
 import org.studysystem.backend.service.GradeService;
 import org.studysystem.backend.utils.FindEntity;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +31,7 @@ public class GradeServiceImpl implements GradeService {
         Grade grade = gradeMapper.toGrade(gradeRequest);
         grade.setUser(user);
         grade.setCourse(course);
-        double courseScore = grade.getProgressScore()*0.4 + grade.getFinalScore()*0.7;
+        double courseScore = grade.getProgressScore()*0.4 + grade.getFinalScore()*0.6;
         grade.setCourseScore(courseScore);
 
         gradeRepository.save(grade);
@@ -65,5 +64,11 @@ public class GradeServiceImpl implements GradeService {
         List<Grade> grades = gradeRepository.findByCourse(course);
         return grades.stream().map(gradeMapper::toGradeResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteGrade(Long userId, Long courseId) {
+        Grade grade = gradeRepository.findByUserIdAndCourseId(userId, courseId);
+        gradeRepository.delete(grade);
     }
 }

@@ -21,3 +21,5 @@ export const removeUserFromCourse = (userId, courseId) => api.delete(COURSE_API_
 export const getUserAndAttendInCourse = (courseId) => api.get(`${COURSE_API_BASE_URL}get/user/attendance/in/course/${courseId}`);
 
 export const importExcel = (file, courseId) => api.post(`${COURSE_API_BASE_URL}import/course/${courseId}`, file, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+export const getLearningOutcomesByUserId = (userId) => api.get(`${COURSE_API_BASE_URL}learning-outcomes/user/${userId}`);

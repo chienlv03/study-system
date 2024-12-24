@@ -83,4 +83,10 @@ public class EnrollmentController {
         }
         return ResponseEntity.ok("Students imported successfully into course with ID " + courseId);
     }
+
+    @GetMapping("/learning-outcomes/user/{userId}")
+    public ResponseEntity<List<LearnOutcomeResponse>> getLearningOutcomes(@PathVariable Long userId) {
+        List<LearnOutcomeResponse> outcomes = enrollmentService.getLearningOutcomesByUserId(userId);
+        return ResponseEntity.ok(outcomes);
+    }
 }

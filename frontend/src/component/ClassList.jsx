@@ -2,13 +2,19 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// import Modal from './Modal';
 import { deleteCourse, getAllCourseByUser } from '../services/CourseService';
 import { enrollCourse, getAllCourseTheUserParticipated, removeUserFromCourse } from '../services/EnrollmentService';
+import ModalFormAddClass from './ModalAddCourse';
+import ModalUpdateCourse from './ModalUpdateCourse';
 
 const ClassList = () => {
     const [classList, setClassList] = useState([]);
     const [showJoinClassInput, setShowJoinClassInput] = useState(false);
     const [classCode, setClassCode] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [classItem, setClassItem] = useState(null);
 
     const navigate = useNavigate();
 
@@ -33,6 +39,23 @@ const ClassList = () => {
         fetchClassList();
     }, []);
 
+    const handleAddClass = (newClass) => {
+        setClassList((prevClasses) => [...prevClasses, newClass]);
+    };
+
+    const handleEditClass = (classItem) => {
+        setClassItem(classItem);
+        setShowEditModal(true);
+    };
+
+    const handleUpdateClass = (updatedClass) => {
+        setClassList((prevClasses) =>
+            prevClasses.map((c) => (c.id === updatedClass.id ? updatedClass : c))
+        ); 
+        setShowEditModal(false);
+    };
+
+
     const handleClassClick = (classItem) => {
         localStorage.setItem('classId', classItem.id);
         localStorage.setItem('name', classItem.name);
@@ -42,11 +65,6 @@ const ClassList = () => {
         localStorage.setItem('maxStudents', classItem.maxStudents);
         localStorage.setItem('currentStudents', classItem.currentStudents);
         navigate(`/detail-class/${classItem.id}/list-student`);
-    };
-
-    const handleEditClass = (classItem) => {
-        localStorage.setItem('classId', classItem.id);
-        navigate(`/edit-class-form/${classItem.id}`, { state: { class: classItem } });
     };
 
     const handleDeleteClass = async (classId) => {
@@ -84,7 +102,7 @@ const ClassList = () => {
                 progress: undefined,
                 theme: "dark",
                 transition: Flip,
-              });
+            });
         } catch (error) {
             toast.error(error.response.data.message, {
                 position: "top-center",
@@ -96,8 +114,12 @@ const ClassList = () => {
                 progress: undefined,
                 theme: "dark",
                 transition: Flip,
-              });
+            });
         }
+    };
+
+    const handleOpenModal = () => {
+        setShowModal(true);
     };
 
     return (
@@ -117,7 +139,7 @@ const ClassList = () => {
                 </button>
                 {userType.includes('ROLE_TEACHER') && (
                     <button
-                        onClick={() => navigate('/add-class-form')}
+                        onClick={() => handleOpenModal()}
                         type="button"
                         className="flex text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 
                         hover:bg-gradient-to-br focus:ring-4 focus:outline-none shadow-lg 
@@ -174,7 +196,7 @@ const ClassList = () => {
                                 <li className="text-lg">Thời gian kết thúc: {classItem.endTime}</li>
                                 <li className="text-lg">Số lượng: {classItem.currentStudents}/{classItem.maxStudents}</li>
                             </ul>
-                            <ul className="absolute z-20 my-2 h-10 flex right-0 top-0 bg-blue-300">
+                            <ul className="absolute  my-2 h-10 flex right-0 top-0 bg-blue-300">
                                 {userType.includes('ROLE_TEACHER') && (
                                     <li onClick={() => handleEditClass(classItem)} className="cursor-pointer py-1 px-2 h-10 border-r-2">
                                         <svg className="h-6 w-6 text-gray-800" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -195,6 +217,17 @@ const ClassList = () => {
                     ))}
                 </div>
             </div>
+            <ModalFormAddClass
+                showModal={showModal}
+                setShowModal={setShowModal}
+                onClassAdded={handleAddClass}
+            />
+            <ModalUpdateCourse
+                showEditModal={showEditModal}
+                setShowEditModal={setShowEditModal}
+                onCourseUpdated={handleUpdateClass}
+                classItem={classItem}
+            />
             <ToastContainer />
         </div>
     );

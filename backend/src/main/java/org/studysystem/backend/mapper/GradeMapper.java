@@ -13,5 +13,6 @@ public interface GradeMapper {
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "course.id", target = "courseId")
     @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "course.name", target = "courseName")
     GradeResponse toGradeResponse(Grade grade);
 }

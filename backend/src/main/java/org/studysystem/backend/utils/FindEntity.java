@@ -18,6 +18,7 @@ public class FindEntity {
     private final AttendanceRepository attendanceRepository;
     private final AssignmentRepository assignmentRepository;
     private final SubmissionRepository submissionRepository;
+    private final GradeRepository gradeRepository;
 
     public User findUser(Long id) {
         return userRepository.findById(id)
@@ -37,6 +38,11 @@ public class FindEntity {
     public Submission findSubmission(Long id) {
         return submissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.SUBMISSION_NOT_FOUND));
+    }
+
+    public Grade findGrade(Long id) {
+        return gradeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.GRADE_NOT_FOUND));
     }
 
 

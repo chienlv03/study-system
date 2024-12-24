@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.studysystem.backend.dto.response.*;
 import org.studysystem.backend.entity.Course;
 import org.studysystem.backend.entity.Enrollment;
+import org.studysystem.backend.entity.Grade;
 import org.studysystem.backend.entity.User;
 import org.studysystem.backend.exception.BadRequestException;
 import org.studysystem.backend.mapper.EnrollmentMapper;
@@ -18,15 +19,13 @@ import org.studysystem.backend.repository.EnrollmentRepository;
 import org.studysystem.backend.repository.GradeRepository;
 import org.studysystem.backend.repository.UserRepository;
 import org.studysystem.backend.service.EnrollmentService;
+import org.studysystem.backend.service.GradeService;
 import org.studysystem.backend.utils.FindEntity;
 import org.studysystem.backend.utils.MessageConstants;
 import org.studysystem.backend.utils.Validation;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +36,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final GradeRepository gradeRepository;
+    private final GradeService gradeService;
     private final EnrollmentMapper enrollmentMapper;
     private final FindEntity findEntity;
     private final Validation validation;
@@ -134,6 +134,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         Course course = findEntity.findCourse(courseId);
         enrollmentRepository.delete(enrollment);
         course.setCurrentStudents(course.getCurrentStudents() - 1);
+        gradeService.deleteGrade(userId, courseId);
         courseRepository.save(course);
     }
 
@@ -209,4 +210,39 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         return errorMessages;
     }
+
+    @Override
+    public List<LearnOutcomeResponse> getLearningOutcomesByUserId(Long userId) {
+        List<Grade> grades = gradeRepository.findByUserId(userId);
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+
+        Map<Long, Grade> gradesByCourseId = grades.stream()
+                .collect(Collectors.toMap(grade -> grade.getCourse().getId(), grade -> grade));
+
+        List<LearnOutcomeResponse> responses = new ArrayList<>();
+
+        for (Enrollment enrollment : enrollments) {
+            Long courseId = enrollment.getCourse().getId();
+            Grade grade = gradesByCourseId.get(courseId);
+
+            LearnOutcomeResponse.LearnOutcomeResponseBuilder builder = LearnOutcomeResponse.builder()
+                    .classCode(enrollment.getCourse().getClassCode())
+                    .courseName(enrollment.getCourse().getName())
+                    .excusedAbsenceCount(enrollment.getExcusedAbsenceCount());
+
+            if (grade != null) {
+                builder.progressScore(grade.getProgressScore())
+                        .finalScore(grade.getFinalScore())
+                        .courseScore(grade.getCourseScore())
+                        .username(grade.getUser().getUsername());
+            } else {
+                builder.username(enrollment.getUser().getUsername());
+            }
+
+            responses.add(builder.build());
+        }
+
+        return responses;
+    }
+
 }

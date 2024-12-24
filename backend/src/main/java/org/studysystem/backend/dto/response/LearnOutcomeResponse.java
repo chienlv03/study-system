@@ -1,18 +1,18 @@
 package org.studysystem.backend.dto.response;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @Builder
-public class GradeResponse {
-    private Long id;
-    private Long courseId;
-    private Long userId;
-    private String username;
+public class LearnOutcomeResponse {
     private String courseName;
+    private String classCode;
+    private String username;
     private Double progressScore;
     private Double finalScore;
     private Double courseScore;
-
+    private int excusedAbsenceCount;
 }

@@ -8,7 +8,6 @@ import org.studysystem.backend.dto.request.SubmissionRequest;
 import org.studysystem.backend.dto.request.UpdateGradeAndFeedbackRequest;
 import org.studysystem.backend.dto.response.SubmissionResponse;
 import org.studysystem.backend.entity.*;
-import org.studysystem.backend.exception.BadRequestException;
 import org.studysystem.backend.mapper.SubmissionMapper;
 import org.studysystem.backend.repository.AssignmentRepository;
 import org.studysystem.backend.repository.SubmissionFileRepository;

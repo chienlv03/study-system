@@ -28,7 +28,7 @@ const ListUser = () => {
     try {
       const response = await getUserInCourse(courseId);
       setUsers(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -121,7 +121,7 @@ const ListUser = () => {
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
-    setFileName(null); 
+    setFileName(null);
   };
 
   const handleImportStudents = async () => {
@@ -144,26 +144,31 @@ const ListUser = () => {
       if (error.response && error.response.data) {
         // Join the array of error messages into a single string
         const errorMessage = error.response.data.join('\n');
-        toast.error(errorMessage, { 
-          position: "top-center", 
+        toast.error(errorMessage, {
+          position: "top-center",
           autoClose: 5000, // Adjust timeout as needed
-          theme: "dark", 
+          theme: "dark",
           transition: Flip
         });
       } else {
-        toast.error("An error occurred during import.", { 
-          position: "top-center", 
-          autoClose: 3000, 
-          theme: "dark", 
-          transition: Flip 
+        toast.error("An error occurred during import.", {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Flip
         });
       }
-    }    
+    }
   };
 
   return (
     <div className='sm:ml-64 mt-16 px-4 py-1 relative'>
-      <UserTable users={users} userType={userType} handleDeleteUser={handleDeleteUser} />
+      <UserTable
+        users={users}
+        userType={userType}
+        handleDeleteUser={handleDeleteUser}
+        
+      />
 
       {userType.includes('ROLE_TEACHER') &&
         <>
@@ -173,7 +178,7 @@ const ListUser = () => {
           </div>
 
           <div className="">
-          <ImportExcel
+            <ImportExcel
               fileName={fileName}
               handleFileChange={handleFileChange}
               handleImportStudents={handleImportStudents}

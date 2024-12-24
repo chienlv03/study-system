@@ -13,4 +13,6 @@ public interface GradeService {
     List<GradeResponse> getGradeByUserId(Long userId);
 
     List<GradeResponse> getGradeByCourseId(Long courseId);
+
+    void deleteGrade(Long userId, Long courseId);
 }

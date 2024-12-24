@@ -135,7 +135,7 @@ const Score = () => {
                                         onChange={(e) => handleInputChange(e, grade.id, 'finalScore')}
                                     />
                                 </td>
-                                <td className="px-6 py-4 text-center">{grade.courseScore}</td>
+                                <td className="px-6 py-4 text-center">{grade.courseScore.toFixed(2)}</td>
                                 <td className="px-6 py-4 text-center">
                                     <button
                                         className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
